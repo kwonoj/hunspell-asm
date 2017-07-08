@@ -1,0 +1,29 @@
+language: node_js
+sudo: false
+
+cache:
+  directories:
+    - node_modules
+
+env:
+  matrix:
+  - NODE_VER=8 FULL_VALIDATE=false
+
+matrix:
+  fast_finish: true
+
+before_install:
+  - nvm install $NODE_VER
+  - node -v && npm -v
+
+install:
+  - npm install
+  - if [ "$FULL_VALIDATE" == "true" ]; then npm run lint && npm run check_circular_dependencies; fi
+
+script:
+  - if [ "$FULL_VALIDATE" == "true" ] && [ -n "DANGER_GITHUB_API_TOKEN" ]; then echo {} > ./.babelrc && npx danger; fi
+  - npm run build
+  - npm test
+
+after_success:
+  - if [ "$FULL_VALIDATE" == "true" ]; then npm run cover; fi
