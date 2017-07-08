@@ -1,0 +1,10 @@
+perf
+spec
+.git
+yarn.lock
+coverage
+typings/
+.vscode/
+src/
+test/
+!dist/src
