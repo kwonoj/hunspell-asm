@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "removeComments": false,
+    "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
@@ -15,21 +15,19 @@
     "importHelpers": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "pretty": true,
     "target": "es5",
-    "outDir": "dist",
+    "outDir": "dist/cjs",
     "lib": [
-      "es5",
-      "es2015",
+      "es2016",
       "dom"
     ]
   },
+  "include": [
+    "src/**/*",
+    "spec/**/*"
+  ],
   "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2
-  },
-  "exclude": [
-    "node_modules",
-    "examples"
-  ]
+  }
 }
