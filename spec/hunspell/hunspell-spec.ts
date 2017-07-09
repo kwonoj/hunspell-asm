@@ -44,7 +44,9 @@ const excludedWords = [
   `𐏑	`,
   `𐏒	`,
   `𐏒𐏑	`,
-  `𐏒𐏒	`
+  `𐏒𐏒	`,
+  `vinteún`,
+  `vinte e un`
 ];
 
 /**
@@ -125,18 +127,46 @@ describe('hunspell', async () => {
     );
   });
 
-  xdescribe('should suggest missplled word', () => {
+  describe('should suggest missplled word', () => {
     const fixtureList = getFixtureList(baseFixturePath, '.sug');
-    fixtureList.forEach((fixture) => {
+    fixtureList.filter(x => !['1463589', 'i54633', 'map'].includes(x)).forEach(fixture => {
       const base = path.join(baseFixturePath, `${fixture}`);
-      const suggestions = fs.readFileSync(`${base}.sug`, 'utf-8').split('\n').filter(x => !!x);
+      //convert suggestion fixture into Array<string|Array<string>>
+      const suggestions = ([
+        ...fs.readFileSync(`${base}.sug`, 'utf-8').split('\n').filter(x => !!x).map(x => {
+          const splitted = x.split(', ');
+          if (splitted.length === 1 && !excludedWords.includes(splitted[0])) {
+            return splitted[0];
+          }
+          const filtered = splitted.filter(word => !excludedWords.includes(word));
+          if (filtered.length > 0) {
+            return filtered;
+          }
+          return null;
+        })
+      ] || [])
+        .filter(x => !!x);
 
-      assert(
-        base,
-        '.wrong',
-        (hunspell: Hunspell, word: string) => hunspell.suggest(word),
-        suggestions.shift()!.split(', ')
-      );
+      it(`${path.basename(fixture)}`, async () => {
+        const hunspell = moduleLoader(`${path.join(baseFixturePath, fixture)}.dic`);
+        const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
+          .map((value: string) => value.split('\n').filter(x => !!x))
+          .toPromise();
+
+        const suggested: Array<string | Array<string>> = [];
+        //run suggestion, construct results into Array<string|Array<string>>
+        words.filter(word => !excludedWords.includes(word)).forEach(word => {
+          const ret = hunspell.suggest(word);
+          if (ret.length > 0) {
+            suggested.push(ret.length > 1 ? ret : ret[0]);
+          }
+        });
+
+        //fixture should equal to actual suggestion
+        expect(suggested).to.deep.equal(suggestions);
+
+        hunspell.dispose();
+      });
     });
   });
 });
