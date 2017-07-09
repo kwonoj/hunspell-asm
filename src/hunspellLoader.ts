@@ -55,9 +55,12 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): spellCheckerFactor
       const suggestionCount = hunspell_suggest(hunspellPtr, suggestionListPtr, allocateString(word));
       const suggestionListValuePtr = getValue(suggestionListPtr, '*');
 
-      const ret = Array.from(Array(suggestionCount).keys()).map(idx =>
-        Pointer_stringify(getValue(suggestionListValuePtr + idx * 4, '*'))
-      );
+      const ret =
+        suggestionCount > 0
+          ? Array.from(Array(suggestionCount).keys()).map(idx =>
+              Pointer_stringify(getValue(suggestionListValuePtr + idx * 4, '*'))
+            )
+          : [];
 
       hunspell_free_list(hunspellPtr, suggestionListPtr, suggestionCount);
       Runtime.stackRestore(stack);
