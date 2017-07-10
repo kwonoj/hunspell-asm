@@ -3,13 +3,12 @@ import { hunspellLoader } from './hunspellLoader';
 import { isWasmEnabled } from './util/isWasmEnabled';
 
 export const loadModule = async (): Promise<spellCheckerFactory> => {
+  const modulePath = `./lib/${isWasmEnabled() ? 'wasm' : 'asm'}/hunspell`;
   //tslint:disable-next-line:no-require-imports
-  const moduleLoader = isWasmEnabled() ? require('./lib/wasm/hunspell') : null;
+  const moduleLoader = require(modulePath);
   const asmModule = moduleLoader();
 
-  //TODO: need to move into preprocessor
-  const initialize = new Promise((resolve) => asmModule.onRuntimeInitialized = () => resolve());
-  await initialize;
+  await asmModule.initializeRuntime();
 
   return hunspellLoader(asmModule);
 };
