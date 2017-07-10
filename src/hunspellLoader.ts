@@ -41,7 +41,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): spellCheckerFactor
     FS.mkdir(memPathId);
     FS.stat(memPathId);
 
-    const p = path.relative(process.cwd(), path.dirname(dictionaryPath));
+    const p = path.relative(process.cwd(), path.dirname(dictionaryPath)) || './';
     FS.mount(FS.filesystems.NODEFS, { root: p }, memPathId);
 
     const basePath = `${memPathId}/${path.basename(dictionaryPath, '.dic')}`;
