@@ -103,13 +103,14 @@ const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
  * @param FS
  * @param memPathId
  */
-const mountBuffer = (FS: any, memPathId: string) => (contents: Uint8Array, fileName: string) => {
-  const mountedFilePath = path.join(memPathId, fileName);
+const mountBuffer = (FS: any, memPathId: string) => (contents: ArrayBufferView, fileName?: string) => {
+  const file = fileName || cuid();
+  const mountedFilePath = path.join(memPathId, file);
 
   if (isFileMounted(FS, mountedFilePath)) {
     log(`mountTypedArrayFile: file is already mounted, return it`);
   } else {
-    FS.writeFile(mountedFilePath, contents); //arrayBuffer?
+    FS.writeFile(mountedFilePath, contents, { encoding: 'binary' });
   }
 
   return mountedFilePath;
