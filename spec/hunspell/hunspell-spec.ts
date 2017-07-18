@@ -4,50 +4,37 @@ import * as path from 'path';
 import * as Rx from 'rxjs';
 import { loadModule } from '../../src';
 import { Hunspell, HunspellFactory } from '../../src/Hunspell';
+import { excludedWords } from '../util';
 
 const readFile = Rx.Observable.bindNodeCallback(fs.readFile);
-/**
- * There are some sets of test around extended ascii chars, utf-ignored chars - we'll excluded those test cases.
- */
-const excludedWords = [
-  `apéritif	`,
-  `APÉRITIF	`,
-  `�o��o�`,
-  `k�nnysz�m�t�s`,
-  `hossznyel�s`,
-  `v�zszer`,
-  `m��ig`,
-  `M��ig`,
-  `M�SSIG`,
-  `Aussto�`,
-  `Absto�.`,
-  `Au�enabmessung`,
-  `Prozessionsstra�e`,
-  `Au�enma�e`,
-  `�r`,
-  `�ram`,
-  `�rach`,
-  `�diter`,
-  `c�ur`,
-  `�uvre`,
-  `C�UR`,
-  `�UVRE`,
-  `طير	`,
-  `فتحة	`,
-  `ضمة	`,
-  `كسرة	`,
-  `فتحتان	`,
-  `ضمتان	`,
-  `كسرتان	`,
-  `شدة	`,
-  `سكون	`,
-  `𐏑	`,
-  `𐏒	`,
-  `𐏒𐏑	`,
-  `𐏒𐏒	`,
-  `vinteún`,
-  `vinte e un`
-];
+
+const mountDirHunspell = (factory: HunspellFactory, dirPath: string, fixture: string) => {
+  const dir = factory.mountDirectory(dirPath);
+  const hunspell = factory.create(path.join(`${dir}`, `${fixture}.aff`), path.join(`${dir}`, `${fixture}.dic`));
+
+  return {
+    hunspell,
+    dispose: () => {
+      hunspell.dispose();
+      factory.unmount(dir);
+    }
+  };
+};
+
+const mountBufferHunspell = async (factory: HunspellFactory, dirPath: string, fixture: string) => {
+  const aff = factory.mountBuffer(await readFile(path.join(`${dirPath}`, `${fixture}.aff`)).toPromise());
+  const dic = factory.mountBuffer(await readFile(path.join(`${dirPath}`, `${fixture}.dic`)).toPromise());
+  const hunspell = factory.create(aff, dic);
+
+  return {
+    hunspell,
+    dispose: () => {
+      hunspell.dispose();
+      factory.unmount(aff);
+      factory.unmount(dic);
+    }
+  };
+};
 
 /**
  * Iterate fixture directory, returns array of test for specified type.
@@ -90,13 +77,7 @@ describe('hunspell', async () => {
     assertionValue: (hunspell: Hunspell, word: string) => any,
     expected: any
   ) => {
-    it(`${path.basename(fixture)}`, async () => {
-      const dir = hunspellFactory.mountDirectory(dirPath);
-      const hunspell = hunspellFactory.create(
-        path.join(`${dir}`, `${fixture}.aff`),
-        path.join(`${dir}`, `${fixture}.dic`)
-      );
-
+    const runAssert = async (hunspell: Hunspell) => {
       const words: Array<string> = await (readFile as any)(`${path.join(dirPath, fixture)}${testType}`, 'utf-8')
         .map((value: string) => value.split('\n').filter(x => !!x))
         .toPromise();
@@ -106,9 +87,18 @@ describe('hunspell', async () => {
         const value = assertionValue(hunspell, word);
         expect({ ...base, value }).to.deep.equal({ ...base, value: expected });
       });
+    };
 
-      hunspell.dispose();
-      hunspellFactory.unmount(dir);
+    it(`${path.basename(fixture)} when mount directory`, async () => {
+      const { hunspell, dispose } = mountDirHunspell(hunspellFactory, dirPath, fixture);
+      await runAssert(hunspell);
+      dispose();
+    });
+
+    it(`${path.basename(fixture)} when mount buffer`, async () => {
+      const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, dirPath, fixture);
+      await runAssert(hunspell);
+      dispose();
     });
   };
 
@@ -132,7 +122,6 @@ describe('hunspell', async () => {
     const fixtureList = getFixtureList(baseFixturePath, '.sug');
     fixtureList.filter(x => !['1463589', 'i54633', 'map'].includes(x)).forEach(fixture => {
       const base = path.join(baseFixturePath, `${fixture}`);
-      //convert suggestion fixture into Array<string|Array<string>>
       const suggestions = ([
         ...fs.readFileSync(`${base}.sug`, 'utf-8').split('\n').filter(x => !!x).map(x => {
           const splitted = x.split(', ');
@@ -148,13 +137,7 @@ describe('hunspell', async () => {
       ] || [])
         .filter(x => !!x);
 
-      it(`${path.basename(fixture)}`, async () => {
-        const dir = hunspellFactory.mountDirectory(baseFixturePath);
-
-        const hunspell = hunspellFactory.create(
-          path.join(`${dir}`, `${fixture}.aff`),
-          path.join(`${dir}`, `${fixture}.dic`)
-        );
+      const runAssert = async (hunspell: Hunspell) => {
         const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
           .map((value: string) => value.split('\n').filter(x => !!x))
           .toPromise();
@@ -170,9 +153,18 @@ describe('hunspell', async () => {
 
         //fixture should equal to actual suggestion
         expect(suggested).to.deep.equal(suggestions);
+      };
 
-        hunspell.dispose();
-        hunspellFactory.unmount(dir);
+      it(`${path.basename(fixture)} when mount directory`, async () => {
+        const { hunspell, dispose } = mountDirHunspell(hunspellFactory, baseFixturePath, fixture);
+        await runAssert(hunspell);
+        dispose();
+      });
+
+      it(`${path.basename(fixture)} when mount buffer`, async () => {
+        const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, baseFixturePath, fixture);
+        await runAssert(hunspell);
+        dispose();
       });
     });
   });
