@@ -6,7 +6,7 @@ export interface Hunspell {
 
 export interface HunspellFactory {
   mountDirectory: (dirPath: string) => string;
-  mountBuffer: (contents: Uint8Array, fileName: string) => string;
+  mountBuffer: (contents: ArrayBufferView, fileName?: string) => string;
   unmount: (mountedFilePath: string) => void;
 
   create: (affPath: string, dictPath: string) => Hunspell;
