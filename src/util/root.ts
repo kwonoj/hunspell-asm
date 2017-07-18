@@ -24,7 +24,7 @@ const _root: any = __window || __global || __self;
 // Wrap in IIFE
 (function() {
   if (!_root) {
-    throw new Error('RxJS could not find any global context (window, self, global)');
+    throw new Error('Could not find any global context (window, self, global)');
   }
 })();
 
