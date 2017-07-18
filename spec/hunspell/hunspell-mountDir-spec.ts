@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Rx from 'rxjs';
 import { loadModule } from '../../src';
-import { Hunspell } from '../../src/Hunspell';
+import { Hunspell, HunspellFactory } from '../../src/Hunspell';
 
 const readFile = Rx.Observable.bindNodeCallback(fs.readFile);
 /**
@@ -60,14 +60,18 @@ const getFixtureList = (fixturePath: string, testType: '.good' | '.wrong' | '.su
     .filter(file => path.extname(file) === testType)
     .map(file => path.basename(file, testType));
 
+/**
+ * running original hunspell's spec using `mountDir` via FS.NODEFS.
+ *
+ */
 describe('hunspell', async () => {
   //setting up path to fixture
   const baseFixturePath = path.join(__dirname, '../__fixtures__');
-  let moduleLoader: (dictionaryPath: string) => Hunspell;
+  let hunspellFactory: HunspellFactory;
 
   //load module one time before test begins
   beforeAll(async done => {
-    moduleLoader = await loadModule();
+    hunspellFactory = await loadModule();
     done();
   });
 
@@ -80,14 +84,20 @@ describe('hunspell', async () => {
    * @param expected expected value to compare with assertionValue.
    */
   const assert = (
+    dirPath: string,
     fixture: string,
     testType: '.good' | '.wrong' | '.sug',
     assertionValue: (hunspell: Hunspell, word: string) => any,
     expected: any
   ) => {
     it(`${path.basename(fixture)}`, async () => {
-      const hunspell = moduleLoader(`${fixture}.dic`);
-      const words: Array<string> = await (readFile as any)(`${fixture}${testType}`, 'utf-8')
+      const dir = hunspellFactory.mountDirectory(dirPath);
+      const hunspell = hunspellFactory.create(
+        path.join(`${dir}`, `${fixture}.aff`),
+        path.join(`${dir}`, `${fixture}.dic`)
+      );
+
+      const words: Array<string> = await (readFile as any)(`${path.join(dirPath, fixture)}${testType}`, 'utf-8')
         .map((value: string) => value.split('\n').filter(x => !!x))
         .toPromise();
 
@@ -98,6 +108,7 @@ describe('hunspell', async () => {
       });
 
       hunspell.dispose();
+      hunspellFactory.unmount(dir);
     });
   };
 
@@ -106,24 +117,14 @@ describe('hunspell', async () => {
     fixtureList
       .filter(x => x !== 'morph')
       .forEach(fixture =>
-        assert(
-          path.join(baseFixturePath, `${fixture}`),
-          '.good',
-          (hunspell: Hunspell, word: string) => hunspell.spell(word),
-          true
-        )
+        assert(baseFixturePath, fixture, '.good', (hunspell: Hunspell, word: string) => hunspell.spell(word), true)
       );
   });
 
   describe('should match missplled word', () => {
     const fixtureList = getFixtureList(baseFixturePath, '.wrong');
     fixtureList.forEach(fixture =>
-      assert(
-        path.join(baseFixturePath, `${fixture}`),
-        '.wrong',
-        (hunspell: Hunspell, word: string) => hunspell.spell(word),
-        false
-      )
+      assert(baseFixturePath, fixture, '.wrong', (hunspell: Hunspell, word: string) => hunspell.spell(word), false)
     );
   });
 
@@ -148,7 +149,12 @@ describe('hunspell', async () => {
         .filter(x => !!x);
 
       it(`${path.basename(fixture)}`, async () => {
-        const hunspell = moduleLoader(`${path.join(baseFixturePath, fixture)}.dic`);
+        const dir = hunspellFactory.mountDirectory(baseFixturePath);
+
+        const hunspell = hunspellFactory.create(
+          path.join(`${dir}`, `${fixture}.aff`),
+          path.join(`${dir}`, `${fixture}.dic`)
+        );
         const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
           .map((value: string) => value.split('\n').filter(x => !!x))
           .toPromise();
@@ -166,6 +172,7 @@ describe('hunspell', async () => {
         expect(suggested).to.deep.equal(suggestions);
 
         hunspell.dispose();
+        hunspellFactory.unmount(dir);
       });
     });
   });
