@@ -1,9 +1,9 @@
-import { spellCheckerFactory } from './Hunspell';
+import { HunspellFactory } from './Hunspell';
 import { hunspellLoader } from './hunspellLoader';
 import { log } from './logger';
 import { isWasmEnabled } from './util/isWasmEnabled';
 
-export const loadModule = async (): Promise<spellCheckerFactory> => {
+export const loadModule = async (): Promise<HunspellFactory> => {
   const asmType = isWasmEnabled() ? 'wasm' : 'asm';
   log(`loadModule: load hunspell module loader from `, asmType);
 
