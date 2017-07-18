@@ -1,6 +1,7 @@
 {
   "files": [
-    "src/**/*.ts"
+    "src/**/*",
+     { "pattern": "spec/__fixtures__/*", "instrument": false, "load": true }
   ],
 
   "tests": [
