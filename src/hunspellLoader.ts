@@ -11,6 +11,7 @@ export type cwrapSignature = <T = Function>(fn: string, returnType: string | nul
 /**
  * https://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html
  */
+/** @internal */
 export interface HunspellAsmModule {
   cwrap: cwrapSignature;
   FS: any;
@@ -41,29 +42,20 @@ const wrapHunspellInterface = (cwrap: cwrapSignature) => ({
   >('Hunspell_free_list', null, ['number', 'number', 'number'])
 });
 
-const isFileMounted = (FS: any, filePath: string): boolean => {
+const isMounted = (FS: any, mountPath: string, type: 'dir' | 'file') => {
   try {
-    const stat = FS.stat(filePath);
-    if (!!stat && FS.isFile(stat.mode)) {
+    const stat = FS.stat(mountPath);
+    const typeFunction = type === 'dir' ? FS.isDir : FS.isFile;
+
+    if (!!stat && typeFunction(stat.mode)) {
+      log(`isMounted: ${mountPath} is already mounted`);
       return true;
     }
   } catch (e) {
-    log(`isFileMounted`, e);
+    log(`isMounted`, e);
   }
 
-  return false;
-};
-
-const isDirMounted = (FS: any, dirPath: string): boolean => {
-  try {
-    const stat = FS.stat(dirPath);
-    if (!!stat && FS.isDir(stat.mode)) {
-      return true;
-    }
-  } catch (e) {
-    log(`isDirMounted`, e);
-  }
-
+  log(`isMounted: could not located mounted path for ${mountPath}`);
   return false;
 };
 
@@ -89,7 +81,7 @@ const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
   }
 
   const mountedDirPath = unixify(path.join(nodePathId, unixify(path.resolve(dirPath))));
-  if (isDirMounted(FS, mountedDirPath)) {
+  if (isMounted(FS, mountedDirPath, 'dir')) {
     log(`mountNodeFile: file is already mounted, return it`);
   } else {
     mkdirTree(FS, mountedDirPath);
@@ -106,9 +98,9 @@ const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
  */
 const mountBuffer = (FS: any, memPathId: string) => (contents: ArrayBufferView, fileName?: string) => {
   const file = fileName || cuid();
-  const mountedFilePath = path.join(memPathId, file);
+  const mountedFilePath = `${memPathId}/${file}`;
 
-  if (isFileMounted(FS, mountedFilePath)) {
+  if (isMounted(FS, mountedFilePath, 'file')) {
     log(`mountTypedArrayFile: file is already mounted, return it`);
   } else {
     FS.writeFile(mountedFilePath, contents, { encoding: 'binary' });
@@ -118,12 +110,12 @@ const mountBuffer = (FS: any, memPathId: string) => (contents: ArrayBufferView, 
 };
 
 const unmount = (FS: any, memPathId: string) => (mountedPath: string) => {
-  if (isFileMounted(FS, mountedPath) && mountedPath.indexOf(memPathId) > -1) {
+  if (isMounted(FS, mountedPath, 'dir') && mountedPath.indexOf(memPathId) > -1) {
     log(`unmount: ${mountedPath} is typedArrayFile, unlink from memory`);
     FS.unlink(mountedPath);
   }
 
-  if (isDirMounted(FS, mountedPath)) {
+  if (isMounted(FS, mountedPath, 'dir')) {
     FS.unmount(mountedPath);
     FS.rmdir(mountedPath);
   }
@@ -131,15 +123,19 @@ const unmount = (FS: any, memPathId: string) => (mountedPath: string) => {
 
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory => {
-  //TODO: selectively export fs interface
   const { cwrap, FS, stringToUTF8, Runtime, getValue, Pointer_stringify } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
   const memPathId = `/${cuid()}`;
-  const nodePathId = `/${cuid()}`;
   FS.mkdir(memPathId);
-  FS.mkdir(nodePathId);
+  log(`hunspellLoader: mount path for bufferFile created at ${memPathId}`);
+
+  const nodePathId = `/${cuid()}`;
+  if (isNode) {
+    FS.mkdir(nodePathId);
+    log(`hunspellLoader: mount path for directory created at ${nodePathId}`);
+  }
 
   const allocString = (value: string) => {
     const len = (value.length << 2) + 1;
