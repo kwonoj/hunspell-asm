@@ -1,5 +1,6 @@
 import * as cuid from 'cuid';
 import * as path from 'path';
+import * as unixify from 'unixify';
 import { HunspellFactory } from './Hunspell';
 import { log } from './logger';
 
@@ -87,12 +88,12 @@ const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
     throw new Error('Mounting physical directory is not supported other than node.js environment');
   }
 
-  const mountedDirPath = path.join(nodePathId, path.resolve(dirPath));
+  const mountedDirPath = unixify(path.join(nodePathId, unixify(path.resolve(dirPath))));
   if (isDirMounted(FS, mountedDirPath)) {
     log(`mountNodeFile: file is already mounted, return it`);
   } else {
     mkdirTree(FS, mountedDirPath);
-    FS.mount(FS.filesystems.NODEFS, { root: dirPath }, mountedDirPath);
+    FS.mount(FS.filesystems.NODEFS, { root: path.resolve(dirPath) }, mountedDirPath);
   }
 
   return mountedDirPath;

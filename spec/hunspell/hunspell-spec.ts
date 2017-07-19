@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Rx from 'rxjs';
+import * as unixify from 'unixify';
 import { loadModule } from '../../src';
 import { Hunspell, HunspellFactory } from '../../src/Hunspell';
 import { excludedWords } from '../util';
@@ -10,7 +11,7 @@ const readFile = Rx.Observable.bindNodeCallback(fs.readFile);
 
 const mountDirHunspell = (factory: HunspellFactory, dirPath: string, fixture: string) => {
   const dir = factory.mountDirectory(dirPath);
-  const hunspell = factory.create(path.join(`${dir}`, `${fixture}.aff`), path.join(`${dir}`, `${fixture}.dic`));
+  const hunspell = factory.create(unixify(path.join(dir, `${fixture}.aff`)), unixify(path.join(dir, `${fixture}.dic`)));
 
   return {
     hunspell,
