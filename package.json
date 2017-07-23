@@ -48,7 +48,7 @@
     "type": "git",
     "url": "git+https://github.com/kwonoj/hunspell-asm.git"
   },
-  "author": "",
+  "author": "OJ Kwon <kwon.ohjoong@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/kwonoj/hunspell-asm/issues"
