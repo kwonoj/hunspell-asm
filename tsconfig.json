@@ -16,7 +16,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
-    "outDir": "dist/cjs",
+    "outDir": "dist",
     "lib": [
       "es2016",
       "dom"
