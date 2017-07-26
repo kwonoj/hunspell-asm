@@ -1,4 +1,5 @@
 import { root } from './root';
+
 /**
  * Naïvely check if current runtime supports native web assembly.
  */
