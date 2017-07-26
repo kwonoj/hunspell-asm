@@ -3,9 +3,8 @@ import * as path from 'path';
 import * as unixify from 'unixify';
 import { HunspellFactory } from './Hunspell';
 import { log } from './logger';
+import { isNode } from './util/isNode';
 
-//naïve detection for running environment
-const isNode = typeof module !== 'undefined' && module.exports;
 export type stringToUTF8Signature = (str: string, outPtr: number, maxBytesToWrite: number) => void;
 export type cwrapSignature = <T = Function>(fn: string, returnType: string | null, parameterType: Array<string>) => T;
 /**
@@ -52,10 +51,11 @@ const isMounted = (FS: any, mountPath: string, type: 'dir' | 'file') => {
       return true;
     }
   } catch (e) {
-    log(`isMounted`, e);
+    if (e.code !== 'ENOENT') {
+      log(`isMounted check failed`, e);
+    }
   }
 
-  log(`isMounted: could not located mounted path for ${mountPath}`);
   return false;
 };
 
@@ -76,7 +76,7 @@ const mkdirTree = (FS: any, dirPath: string) => {
 };
 
 const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
-  if (!isNode) {
+  if (!isNode()) {
     throw new Error('Mounting physical directory is not supported other than node.js environment');
   }
 
@@ -110,7 +110,7 @@ const mountBuffer = (FS: any, memPathId: string) => (contents: ArrayBufferView, 
 };
 
 const unmount = (FS: any, memPathId: string) => (mountedPath: string) => {
-  if (isMounted(FS, mountedPath, 'dir') && mountedPath.indexOf(memPathId) > -1) {
+  if (isMounted(FS, mountedPath, 'file') && mountedPath.indexOf(memPathId) > -1) {
     log(`unmount: ${mountedPath} is typedArrayFile, unlink from memory`);
     FS.unlink(mountedPath);
   }
@@ -132,7 +132,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
   log(`hunspellLoader: mount path for bufferFile created at ${memPathId}`);
 
   const nodePathId = `/${cuid()}`;
-  if (isNode) {
+  if (isNode()) {
     FS.mkdir(nodePathId);
     log(`hunspellLoader: mount path for directory created at ${nodePathId}`);
   }
