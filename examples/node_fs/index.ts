@@ -2,7 +2,10 @@
 import * as path from 'path';
 import * as unixify from 'unixify';
 import { loadModule } from '../../src';
+import { enableLogger } from '../../src/logger';
 import { runHunspell } from '../runHunspell';
+
+enableLogger(console.log.bind(console));
 
 const dictPath = path.resolve('../../spec/__fixtures__');
 
