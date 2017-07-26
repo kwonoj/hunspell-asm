@@ -9,7 +9,7 @@ env:
   matrix:
   - NODE_VER=6 FULL_VALIDATE=false
   - NODE_VER=7 FULL_VALIDATE=false
-  - NODE_VER=8 FULL_VALIDATE=false
+  - NODE_VER=8 FULL_VALIDATE=true
 
 matrix:
   fast_finish: true
@@ -20,12 +20,12 @@ before_install:
 
 install:
   - npm install
-  - if [ "$FULL_VALIDATE" == "true" ]; then npm run lint && npm run check_circular_dependencies; fi
+  - if [ "$FULL_VALIDATE" == "true" ]; then npm run lint; fi
 
 script:
-  - if [ "$FULL_VALIDATE" == "true" ] && [ -n "DANGER_GITHUB_API_TOKEN" ]; then echo {} > ./.babelrc && npx danger; fi
   - npm run build
   - npm test
 
 after_success:
-  - if [ "$FULL_VALIDATE" == "true" ]; then npm run cover; fi
+#limiting coverage under spec/hunspell-asm test to avoid wasm integration test results are being collected.
+  - if [ "$FULL_VALIDATE" == "true" ]; then npx jest --config jest.json --testPathPattern spec/hunspell-asm --coverage --no-cache --runInBand && bash <(curl -s https://codecov.io/bash); fi
