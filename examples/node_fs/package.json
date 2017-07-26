@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "ts-node index.ts",
-    "prepare": ""
+    "start": "ts-node index.ts"
   },
   "author": "OJ Kwon <kwon.ohjoong@gmail.com>",
   "license": "MIT",
