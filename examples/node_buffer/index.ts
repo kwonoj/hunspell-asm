@@ -3,7 +3,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Rx from 'rxjs';
 import { loadModule } from '../../src';
+import { enableLogger } from '../../src/logger';
 import { runHunspell } from '../runHunspell';
+
+enableLogger(console.log.bind(console));
 
 const readFile = Rx.Observable.bindNodeCallback(fs.readFile);
 const dictPath = path.resolve('../../spec/__fixtures__');

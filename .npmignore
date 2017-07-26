@@ -8,3 +8,4 @@ typings/
 src/
 test/
 !dist/src
+examples/
