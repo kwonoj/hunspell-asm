@@ -25,9 +25,14 @@
     "src/**/*.{ts, tsx}",
     "!**/*.d.ts"
   ],
+  "projects": [
+    "<rootDir>/spec/hunspell/*",
+    "<rootDir>/spec/hunspell-asm/*"
+  ],
   "coveragePathIgnorePatterns": [
     "<rootDir>/node_modules/",
     "<rootDir>/spec/.*\\.(ts|js)$",
-    "<rootDir>/build/.*\\.(ts|js)$"
+    "<rootDir>/build/.*\\.(ts|js)$",
+    "<rootDir>/src/lib/.*\\.js$"
   ]
 }
