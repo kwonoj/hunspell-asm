@@ -1,8 +1,8 @@
 import { HunspellFactory } from './Hunspell';
 import { hunspellLoader } from './hunspellLoader';
-import { log } from './logger';
 import { isNode } from './util/isNode';
 import { isWasmEnabled } from './util/isWasmEnabled';
+import { log } from './util/logger';
 
 /**
  * Asynchronously load and initialize asm module.
@@ -35,3 +35,5 @@ export const loadModule = async (binaryEndpoint?: string): Promise<HunspellFacto
 
   return hunspellLoader(asmModule);
 };
+
+export { log, enableLogger } from './util/logger';
