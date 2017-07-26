@@ -1,6 +1,6 @@
+//tslint:disable:no-require-imports
 import { expect } from 'chai';
 import * as path from 'path';
-//tslint:disable:no-require-imports
 import loadModuleType = require('../../src/loadModule');
 
 describe('loadModule', () => {
@@ -31,7 +31,10 @@ describe('loadModule', () => {
     wasm = require('../../src/lib/wasm/hunspell');
   });
 
-  afterEach(() => jest.resetModules());
+  afterEach(() => {
+    jest.resetAllMocks();
+    jest.resetModules();
+  });
 
   it('should load wasm if wasm supported', async () => {
     const isWasmEnabled: jest.Mock<() => boolean> = require('../../src/util/isWasmEnabled').isWasmEnabled;

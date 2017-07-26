@@ -1,8 +1,14 @@
-//naïve detection for running environment
+import { root } from './root';
+
+/**
+ * Naïvely detect if running environment if node
+ */
 export const isNode = () => {
-  if (typeof process === 'object') {
-    if (typeof process.versions === 'object') {
-      if (typeof process.versions.node !== 'undefined') {
+  const proc = root.process;
+
+  if (!!proc && typeof proc === 'object') {
+    if (typeof proc.versions === 'object') {
+      if (typeof proc.versions.node !== 'undefined') {
         return true;
       }
     }
