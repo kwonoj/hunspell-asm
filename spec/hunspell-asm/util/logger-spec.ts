@@ -1,13 +1,13 @@
 //tslint:disable:no-require-imports
 import { expect } from 'chai';
-import loggerType = require('../../src/logger');
+import loggerType = require('../../../src/util/logger');
 
 describe('logger', () => {
   let log: typeof loggerType.log;
   let enableLogger: typeof loggerType.enableLogger;
 
   beforeEach(() => {
-    ({ log, enableLogger } = require('../../src/logger'));
+    ({ log, enableLogger } = require('../../../src/util/logger'));
   });
 
   afterEach(() => jest.resetModules());

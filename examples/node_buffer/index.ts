@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Rx from 'rxjs';
 import { loadModule } from '../../src';
-import { enableLogger } from '../../src/logger';
+import { enableLogger } from '../../src/util/logger';
 import { runHunspell } from '../runHunspell';
 
 enableLogger(console.log.bind(console));

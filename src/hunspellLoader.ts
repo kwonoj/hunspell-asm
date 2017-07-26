@@ -2,8 +2,8 @@ import * as cuid from 'cuid';
 import * as path from 'path';
 import * as unixify from 'unixify';
 import { HunspellFactory } from './Hunspell';
-import { log } from './logger';
 import { isNode } from './util/isNode';
+import { log } from './util/logger';
 
 export type stringToUTF8Signature = (str: string, outPtr: number, maxBytesToWrite: number) => void;
 export type cwrapSignature = <T = Function>(fn: string, returnType: string | null, parameterType: Array<string>) => T;

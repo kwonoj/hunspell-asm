@@ -1,7 +1,7 @@
 //tslint:disable:no-console
 import { loadModule } from '../../src/index';
-import { enableLogger } from '../../src/logger';
 import { isWasmEnabled } from '../../src/util/isWasmEnabled';
+import { enableLogger } from '../../src/util/logger';
 import { runHunspell } from '../runHunspell';
 
 enableLogger(console.log.bind(console));
