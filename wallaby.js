@@ -1,8 +1,6 @@
 module.exports = (wallaby) => ({
   files: [
-    "src/**/*.ts",
-    { "pattern": "spec/util.ts", "instrument": false, "load": true }
-
+    "src/**/*.ts"
   ],
 
   tests: [
