@@ -28,4 +28,4 @@ script:
 
 after_success:
 #limiting coverage under spec/hunspell-asm test to avoid wasm integration test results are being collected.
-  - if [ "$FULL_VALIDATE" == "true" ]; then npx jest --config jest.json --testPathPattern spec/hunspell-asm --coverage --no-cache --runInBand && bash <(curl -s https://codecov.io/bash); fi
+  - if [ "$FULL_VALIDATE" == "true" ]; then npm run test:hunspell-asm && bash <(curl -s https://codecov.io/bash); fi

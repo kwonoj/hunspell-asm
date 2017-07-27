@@ -12,11 +12,6 @@ describe('isWasmEnabled', () => {
     root = require('../../../src/util/root').root;
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.resetModules();
-  });
-
   it('should return true if native wasm object found', () => {
     root.WebAssembly = {
       compile: {},

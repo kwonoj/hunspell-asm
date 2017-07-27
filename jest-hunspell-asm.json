@@ -2,10 +2,13 @@
   "transform": {
     ".(js|jsx|ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
   },
-  "testRegex": "(-spec)\\.(ts|tsx)$",
+  "testMatch": [
+    "**/spec/hunspell-asm/**/*-spec.ts"
+  ],
   "bail": true,
   "mapCoverage": true,
   "resetMocks": true,
+  "clearMocks": true,
   "resetModules": true,
   "testEnvironment": "node",
   "moduleFileExtensions": [
