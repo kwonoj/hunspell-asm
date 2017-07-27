@@ -7,7 +7,7 @@ export const isNode = () => {
   const proc = root.process;
 
   if (!!proc && typeof proc === 'object') {
-    if (typeof proc.versions === 'object') {
+    if (!!proc.versions && typeof proc.versions === 'object') {
       if (typeof proc.versions.node !== 'undefined') {
         return true;
       }

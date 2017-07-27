@@ -22,8 +22,26 @@ describe('isNode', () => {
     expect(isNode()).to.be.true;
   });
 
-  it('should return false if node specific object not found', () => {
-    root.process = {};
+  it('should return false if node process object not found', () => {
+    root.process = null;
+
+    expect(isNode()).to.be.false;
+  });
+
+  it('should return false if node versions object not found', () => {
+    root.process = {
+      versions: null
+    };
+
+    expect(isNode()).to.be.false;
+  });
+
+  it('should return false if node object not found', () => {
+    root.process = {
+      versions: {
+        node: undefined
+      }
+    };
 
     expect(isNode()).to.be.false;
   });
