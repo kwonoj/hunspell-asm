@@ -4,7 +4,8 @@ import * as path from 'path';
 import * as Rx from 'rxjs';
 import * as unixify from 'unixify';
 import { loadModule } from '../../src';
-import { Hunspell, HunspellFactory } from '../../src/Hunspell';
+import { Hunspell } from '../../src/Hunspell';
+import { HunspellFactory } from '../../src/HunspellFactory';
 import { excludedWords } from '../util';
 
 const readFile = Rx.Observable.bindNodeCallback(fs.readFile);

@@ -1,4 +1,4 @@
-import { HunspellFactory } from './Hunspell';
+import { HunspellFactory } from './HunspellFactory';
 import { hunspellLoader } from './hunspellLoader';
 import { isNode } from './util/isNode';
 import { isWasmEnabled } from './util/isWasmEnabled';
