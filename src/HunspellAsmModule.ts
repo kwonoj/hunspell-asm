@@ -7,14 +7,11 @@ export type stringToUTF8Signature = (str: string, outPtr: number, maxBytesToWrit
 /** @internal */
 export type cwrapSignature = <T = Function>(fn: string, returnType: string | null, parameterType: Array<string>) => T;
 
-/**
- * Subset of filesystem values available in wasm module.
- */
 /** @internal */
-export enum FILESYSTEMS {
-  MEMFS = 'MEMFS',
-  NODEFS = 'NODEFS'
-}
+export type FILESYSTEMS = {
+  NODEFS: any;
+  MEMFS: any;
+};
 
 /**
  * Subset of internal filesystem api for wasm module.
