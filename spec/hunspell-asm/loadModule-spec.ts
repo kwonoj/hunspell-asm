@@ -10,30 +10,22 @@ describe('loadModule', () => {
   let wasm: jest.Mock<any>;
 
   beforeEach(() => {
+    const mockLoader = {
+      initializeRuntime: () => Promise.resolve(true)
+    };
+
     jest.mock('../../src/util/isWasmEnabled');
     jest.mock('../../src/util/isNode');
 
-    jest.mock('../../src/lib/asm/hunspell');
-    jest.mock('../../src/lib/wasm/hunspell');
+    jest.mock('../../src/lib/asm/hunspell', () => jest.fn(() => mockLoader), { virtual: true });
+    jest.mock('../../src/lib/wasm/hunspell', () => jest.fn(() => mockLoader), { virtual: true });
 
     jest.mock('../../src/hunspellLoader');
 
     loadModule = require('../../src/loadModule').loadModule;
 
-    const mockLoader = {
-      initializeRuntime: () => Promise.resolve(true)
-    };
-
-    (require('../../src/lib/asm/hunspell') as jest.Mock<any>).mockReturnValue(mockLoader);
-    (require('../../src/lib/wasm/hunspell') as jest.Mock<any>).mockReturnValue(mockLoader);
-
     asm = require('../../src/lib/asm/hunspell');
     wasm = require('../../src/lib/wasm/hunspell');
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.resetModules();
   });
 
   it('should load wasm if wasm supported', async () => {

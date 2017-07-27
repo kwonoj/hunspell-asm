@@ -12,11 +12,6 @@ describe('isNode', () => {
     root = require('../../../src/util/root').root;
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.resetModules();
-  });
-
   it('should return true if node specific object found', () => {
     root.process = {
       versions: {

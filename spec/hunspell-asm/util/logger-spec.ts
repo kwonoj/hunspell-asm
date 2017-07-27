@@ -10,11 +10,6 @@ describe('logger', () => {
     ({ log, enableLogger } = require('../../../src/util/logger'));
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.resetModules();
-  });
-
   it('should do nothing by default', () => {
     expect(() => log('')).to.not.throw();
   });
