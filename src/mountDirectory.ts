@@ -6,8 +6,8 @@ import { isNode } from './util/isNode';
 import { log } from './util/logger';
 
 /**
- * Mount phsyical path into wasm internal memory filesystem to allow wasm
- * can access phsyical file directly.
+ * Creates a function to mount phsyical path into wasm internal memory filesystem
+ * to allow wasm can access phsyical file directly.
  *
  * @param {FS} FS wasm module filesystem
  * @param {string} nodePathId root path in memory filesystem to mount given path under.

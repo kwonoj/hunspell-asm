@@ -2,28 +2,11 @@ import * as cuid from 'cuid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { isMounted } from './isMounted';
+import { mountBuffer } from './mountBuffer';
 import { mountDirectory } from './mountDirectory';
 import { isNode } from './util/isNode';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
-
-/**
- *
- * @param FS
- * @param memPathId
- */
-const mountBuffer = (FS: any, memPathId: string) => (contents: ArrayBufferView, fileName?: string) => {
-  const file = fileName || cuid();
-  const mountedFilePath = `${memPathId}/${file}`;
-
-  if (isMounted(FS, mountedFilePath, 'file')) {
-    log(`mountTypedArrayFile: file is already mounted, return it`);
-  } else {
-    FS.writeFile(mountedFilePath, contents, { encoding: 'binary' });
-  }
-
-  return mountedFilePath;
-};
 
 const unmount = (FS: any, memPathId: string) => (mountedPath: string) => {
   if (isMounted(FS, mountedPath, 'file') && mountedPath.indexOf(memPathId) > -1) {
