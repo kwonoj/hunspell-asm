@@ -1,7 +1,7 @@
 {
   "name": "hunspell-asm",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "config": {
@@ -32,7 +32,7 @@
     ]
   },
   "scripts": {
-    "prepublish": "npm-run-all build test",
+    "prepublishOnly": "npm-run-all build test",
     "precommit": "lint-staged",
     "prepush": "npm-run-all build test",
     "commitmsg": "validate-commit-msg",
