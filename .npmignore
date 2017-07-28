@@ -9,3 +9,11 @@ src/
 test/
 !dist/src
 examples/
+.travis.yml
+appveyor.yml
+jest-hunspell.json
+jest-hunspell-asm.jsom
+tsconfg.json
+tslint.json
+wallaby.js
+dist/src/lib/README.md
