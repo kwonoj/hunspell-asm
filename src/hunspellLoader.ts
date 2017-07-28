@@ -1,29 +1,11 @@
 import * as cuid from 'cuid';
-import * as path from 'path';
-import * as unixify from 'unixify';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { isMounted } from './isMounted';
-import { mkdirTree } from './mkdirTree';
+import { mountDirectory } from './mountDirectory';
 import { isNode } from './util/isNode';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
-
-const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
-  if (!isNode()) {
-    throw new Error('Mounting physical directory is not supported other than node.js environment');
-  }
-
-  const mountedDirPath = unixify(path.join(nodePathId, unixify(path.resolve(dirPath))));
-  if (isMounted(FS, mountedDirPath, 'dir')) {
-    log(`mountNodeFile: file is already mounted, return it`);
-  } else {
-    mkdirTree(FS, mountedDirPath);
-    FS.mount(FS.filesystems.NODEFS, { root: path.resolve(dirPath) }, mountedDirPath);
-  }
-
-  return mountedDirPath;
-};
 
 /**
  *
