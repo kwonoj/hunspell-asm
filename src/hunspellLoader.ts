@@ -1,24 +1,12 @@
 import * as cuid from 'cuid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
-import { isMounted } from './isMounted';
 import { mountBuffer } from './mountBuffer';
 import { mountDirectory } from './mountDirectory';
+import { unmount } from './unmount';
 import { isNode } from './util/isNode';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
-
-const unmount = (FS: any, memPathId: string) => (mountedPath: string) => {
-  if (isMounted(FS, mountedPath, 'file') && mountedPath.indexOf(memPathId) > -1) {
-    log(`unmount: ${mountedPath} is typedArrayFile, unlink from memory`);
-    FS.unlink(mountedPath);
-  }
-
-  if (isMounted(FS, mountedPath, 'dir')) {
-    FS.unmount(mountedPath);
-    FS.rmdir(mountedPath);
-  }
-};
 
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory => {
