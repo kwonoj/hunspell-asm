@@ -8,6 +8,15 @@ import { isNode } from './util/isNode';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
 
+/**
+ * Creates a factory function for mounting files into wasm filesystem
+ * and creating hunspell instance.
+ *
+ * @param {HunspellAsmModule} asmModule wasm / asm module loaded into memory.
+ *
+ * @return {HunspellFactory} factory function for mounting files and creating hunspell instance.
+ */
+
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory => {
   const { cwrap, FS, stringToUTF8, Runtime, getValue, Pointer_stringify } = asmModule;
