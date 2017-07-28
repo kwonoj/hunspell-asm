@@ -4,25 +4,10 @@ import * as unixify from 'unixify';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { isMounted } from './isMounted';
+import { mkdirTree } from './mkdirTree';
 import { isNode } from './util/isNode';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
-
-const mkdirTree = (FS: any, dirPath: string) => {
-  const dirs = dirPath.split('/');
-  let d = '';
-  for (let i = 0; i < dirs.length; ++i) {
-    d += '/' + dirs[i];
-    try {
-      FS.mkdir(d);
-    } catch (e) {
-      //throw if not ERRNO_CODES.EEXIST
-      if (e.errno != 17) {
-        throw e;
-      }
-    }
-  }
-};
 
 const mountDirectory = (FS: any, nodePathId: string) => (dirPath: string) => {
   if (!isNode()) {
