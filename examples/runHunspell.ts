@@ -1,5 +1,5 @@
 //tslint:disable:no-console
-import { HunspellFactory } from '../src/Hunspell';
+import { HunspellFactory } from '../src/HunspellFactory';
 const misSpelledWord = '들어오세';
 const correctWord = '들어오세요';
 
