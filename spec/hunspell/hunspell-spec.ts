@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as fs from 'fs';
+import { includes } from 'lodash';
 import * as path from 'path';
 import * as Rx from 'rxjs';
 import * as unixify from 'unixify';
@@ -84,7 +85,7 @@ describe('hunspell', async () => {
         .map((value: string) => value.split('\n').filter(x => !!x))
         .toPromise();
 
-      words.filter(word => !excludedWords.includes(word)).forEach(word => {
+      words.filter(word => !includes(excludedWords, word)).forEach(word => {
         const base = { word };
         const value = assertionValue(hunspell, word);
         expect({ ...base, value }).to.deep.equal({ ...base, value: expected });
@@ -122,15 +123,15 @@ describe('hunspell', async () => {
 
   describe('should suggest missplled word', () => {
     const fixtureList = getFixtureList(baseFixturePath, '.sug');
-    fixtureList.filter(x => !['1463589', 'i54633', 'map'].includes(x)).forEach(fixture => {
+    fixtureList.filter(x => !includes(['1463589', 'i54633', 'map'], x)).forEach(fixture => {
       const base = path.join(baseFixturePath, `${fixture}`);
       const suggestions = ([
         ...fs.readFileSync(`${base}.sug`, 'utf-8').split('\n').filter(x => !!x).map(x => {
           const splitted = x.split(', ');
-          if (splitted.length === 1 && !excludedWords.includes(splitted[0])) {
+          if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
             return splitted[0];
           }
-          const filtered = splitted.filter(word => !excludedWords.includes(word));
+          const filtered = splitted.filter(word => !includes(excludedWords, word));
           if (filtered.length > 0) {
             return filtered;
           }
@@ -146,7 +147,7 @@ describe('hunspell', async () => {
 
         const suggested: Array<string | Array<string>> = [];
         //run suggestion, construct results into Array<string|Array<string>>
-        words.filter(word => !excludedWords.includes(word)).forEach(word => {
+        words.filter(word => !includes(excludedWords, word)).forEach(word => {
           const ret = hunspell.suggest(word);
           if (ret.length > 0) {
             suggested.push(ret.length > 1 ? ret : ret[0]);
