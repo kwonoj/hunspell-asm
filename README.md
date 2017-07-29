@@ -2,6 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/7s0r599r9h6r682g/branch/master?svg=true)](https://ci.appveyor.com/project/kwonoj/hunspell-asm/branch/master)
 [![codecov](https://codecov.io/gh/kwonoj/hunspell-asm/branch/master/graph/badge.svg)](https://codecov.io/gh/kwonoj/hunspell-asm)
 [![npm](https://img.shields.io/npm/v/hunspell-asm.svg)](https://www.npmjs.com/package/hunspell-asm)
+[![node](https://img.shields.io/badge/node-=>4.0-blue.svg?style=flat)](https://www.npmjs.com/package/hunspell-asm)
 
 # Hunspall-asm
 
@@ -17,7 +18,7 @@ npm install hunspall-asm
 
 ## Loading module asynchronously
 
-`Hunspell-asm` requires to wasm binary (or asm.js where wasm is not supported) of hunspell, need to initialize module first.
+`Hunspell-asm` rely wasm binary (or asm.js where wasm is not supported) of hunspell, which need to be initialized first.
 
 ```js
 import { loadModule } from 'hunspell-asm';
@@ -31,15 +32,15 @@ const hunspellFactory = await loadModule();
 loadModule(binaryEndpoint?: string): Promise<HunspellFactory>
 ```
 
-It accepts `binaryEndpoint` as optional parameter for mainly browser environment. Unlike node, browser can't access wasm / asm binary directly in filesystem but have to `fetch`. Provide endpoints for paths to `dist/src/lib/**/*.(wasm|mem)` and it'll be fetched runtime. On node, this endpoint can be used to override physical path to binaries. 
+It accepts `binaryEndpoint` as optional parameter for mainly browser environment. Unlike node, browser can't access wasm / asm binary directly in filesystem but have to `fetch`. Provide endpoints for paths to `dist/src/lib/**/*.(wasm|mem)` and it'll be fetched runtime. On node, this endpoint can be used to override physical path to binaries.
 
 ## Mounting files
 
 Wasm binary uses different memory spaces allocated for its own and cannot access plain javascript object / or files directly. `HunspellFactory` provides few interfaces to interop physical file, or file contents into hunspell.
 
 - `mountDirectory(dirPath: string): string` : (node.js only) Mount physical path. Once directory is mounted hunspell can read all files under mounted path. Returns `virtual` path to mounted path.
-- `mountBuffer(contents: ArrayBufferView, fileName?: string): string` : Mount contents of file. Environment like browser which doesn't have access to filesystem can use this interface to create each file into memory. 
-- `unmount(mountedFilePath: string)` : Unmount path if it's exists in memory. If it's bufferFile created by `mountBuffer`, unmount will remove those file object in wasm memory as well. 
+- `mountBuffer(contents: ArrayBufferView, fileName?: string): string` : Mount contents of file. Environment like browser which doesn't have access to filesystem can use this interface to create each file into memory.
+- `unmount(mountedFilePath: string)` : Unmount path if it's exists in memory. If it's bufferFile created by `mountBuffer`, unmount will remove those file object in wasm memory as well.
 
 All of `virtual` paths for mounted filesystem uses unix separator regardless of platform.
 

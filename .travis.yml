@@ -7,6 +7,8 @@ cache:
 
 env:
   matrix:
+  - NODE_VER=4 FULL_VALIDATE=false
+  - NODE_VER=5 FULL_VALIDATE=false
   - NODE_VER=6 FULL_VALIDATE=false
   - NODE_VER=7 FULL_VALIDATE=false
   - NODE_VER=8 FULL_VALIDATE=true
