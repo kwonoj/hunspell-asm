@@ -18,7 +18,7 @@ npm install hunspall-asm
 
 ## Loading module asynchronously
 
-`Hunspell-asm` rely wasm binary (or asm.js where wasm is not supported) of hunspell, which need to be initialized first.
+`Hunspell-asm` relys on wasm binary (or asm.js where wasm is not supported) of hunspell, which need to be initialized first.
 
 ```js
 import { loadModule } from 'hunspell-asm';
@@ -59,6 +59,10 @@ create(affPath: string, dictPath: string): Hunspell
 - `dispose(): void` : Destroy current instance of hunspell. It is important to note created instance of hunspell will not be destroyed automatically.
 
 There are simple [examples](https://github.com/kwonoj/hunspell-asm/tree/e0e421fda667fb0d4888a4e0b21877e95540c29c/examples) for each environments using different apis. In each example directory do `npm install && npm start`.
+
+## Things to note
+
+- Ensure all inputs (aff, dic, word for spell / suggest) are UTF-8 encoded correctly. While hunspell itself supports other encodings, all surrounding interfaces passing buffers are plain javascript doesn't detect / converts encodings automatically.
 
 # Building / Testing
 
