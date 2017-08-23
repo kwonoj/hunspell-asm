@@ -1,3 +1,13 @@
+<a name="0.0.5"></a>
+## [0.0.5](https://github.com/kwonoj/hunspell-asm/compare/v0.0.4...v0.0.5) (2017-08-23)
+
+
+### Features
+
+* **hunspell:** bump up hunspell ([77367b9](https://github.com/kwonoj/hunspell-asm/commit/77367b9))
+
+
+
 <a name="0.0.4"></a>
 ## [0.0.4](https://github.com/kwonoj/hunspell-asm/compare/v0.0.3...v0.0.4) (2017-07-30)
 
