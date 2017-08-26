@@ -75,3 +75,8 @@ Few npm scripts are supported for build / test code.
 - `lint`: Run lint over all codebases
 - `lint:staged`: Run lint only for staged changes. This'll be executed automatically with precommit hook.
 - `commit`: Commit wizard to write commit message
+
+# License
+
+- Hunspell: [original license](https://github.com/hunspell/hunspell/blob/master/license.hunspell)
+- Hunspell-asm: [MIT](https://github.com/kwonoj/hunspell-asm/blob/master/LICENSE)

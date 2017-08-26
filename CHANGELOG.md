@@ -1,3 +1,8 @@
+<a name="0.0.6"></a>
+## [0.0.6](https://github.com/kwonoj/hunspell-asm/compare/v0.0.5...v0.0.6) (2017-08-26)
+
+
+
 <a name="0.0.5"></a>
 ## [0.0.5](https://github.com/kwonoj/hunspell-asm/compare/v0.0.4...v0.0.5) (2017-08-23)
 
