@@ -4,21 +4,21 @@
 [![npm](https://img.shields.io/npm/v/hunspell-asm.svg)](https://www.npmjs.com/package/hunspell-asm)
 [![node](https://img.shields.io/badge/node-=>4.0-blue.svg?style=flat)](https://www.npmjs.com/package/hunspell-asm)
 
-# Hunspall-asm
+# Hunspell-asm
 
 `Hunspell-asm` is isomorphic javascript binding to [hunspell](https://github.com/hunspell/hunspell) spellchecker based on WebAssembly hunspell binary. This module aims to provide thin, lightweight interface to hunspell without requiring native modules.
 
 # Install
 
 ```sh
-npm install hunspall-asm
+npm install hunspell-asm
 ```
 
 # Usage
 
 ## Loading module asynchronously
 
-`Hunspell-asm` relys on wasm binary (or asm.js where wasm is not supported) of hunspell, which need to be initialized first.
+`Hunspell-asm` relies on wasm binary (or asm.js where wasm is not supported) of hunspell, which need to be initialized first.
 
 ```js
 import { loadModule } from 'hunspell-asm';
