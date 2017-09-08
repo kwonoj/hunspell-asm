@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/kwonoj/hunspell-asm.svg?branch=master)](https://travis-ci.org/kwonoj/hunspell-asm)
-[![Build status](https://ci.appveyor.com/api/projects/status/7s0r599r9h6r682g/branch/master?svg=true)](https://ci.appveyor.com/project/kwonoj/hunspell-asm/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/7s0r599r9h6r682g?svg=true)](https://ci.appveyor.com/project/kwonoj/hunspell-asm)
 [![codecov](https://codecov.io/gh/kwonoj/hunspell-asm/branch/master/graph/badge.svg)](https://codecov.io/gh/kwonoj/hunspell-asm)
 [![npm](https://img.shields.io/npm/v/hunspell-asm.svg)](https://www.npmjs.com/package/hunspell-asm)
 [![node](https://img.shields.io/badge/node-=>4.0-blue.svg?style=flat)](https://www.npmjs.com/package/hunspell-asm)
