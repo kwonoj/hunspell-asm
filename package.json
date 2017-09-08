@@ -74,6 +74,7 @@
   },
   "dependencies": {
     "cuid": "^1.3.8",
+    "getroot": "^1.0.0",
     "tslib": "^1.7.1",
     "unixify": "^1.0.0"
   },
