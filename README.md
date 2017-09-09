@@ -6,6 +6,8 @@
 
 # Hunspell-asm
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/kwonoj/hunspell-asm.svg)](https://greenkeeper.io/)
+
 `Hunspell-asm` is isomorphic javascript binding to [hunspell](https://github.com/hunspell/hunspell) spellchecker based on WebAssembly hunspell binary. This module aims to provide thin, lightweight interface to hunspell without requiring native modules.
 
 # Install
