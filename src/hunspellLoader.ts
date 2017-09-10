@@ -1,4 +1,4 @@
-import * as cuid from 'cuid';
+import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { mountBuffer } from './mountBuffer';
@@ -23,11 +23,11 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
-  const memPathId = `/${cuid()}`;
+  const memPathId = `/${nanoid(45)}`;
   FS.mkdir(memPathId);
   log(`hunspellLoader: mount path for bufferFile created at ${memPathId}`);
 
-  const nodePathId = `/${cuid()}`;
+  const nodePathId = `/${nanoid(45)}`;
   if (isNode()) {
     FS.mkdir(nodePathId);
     log(`hunspellLoader: mount path for directory created at ${nodePathId}`);

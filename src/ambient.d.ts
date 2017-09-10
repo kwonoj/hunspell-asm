@@ -1,2 +1,2 @@
-declare module 'cuid';
+declare module 'nanoid';
 declare module 'unixify';

@@ -7,7 +7,7 @@ describe('mountBuffer', () => {
   let fsMock: FS;
 
   beforeEach(() => {
-    jest.mock('cuid');
+    jest.mock('nanoid');
     jest.mock('../../src/isMounted');
 
     fsMock = {
@@ -44,13 +44,13 @@ describe('mountBuffer', () => {
 
   it('should generate file name if not provided', () => {
     //tslint:disable-next-line:no-require-imports
-    const cuidMock = require('cuid') as jest.Mock<any>;
-    const dummyCuid = '_dummy_cuid';
-    cuidMock.mockReturnValueOnce(dummyCuid);
+    const nanoIdMock = require('nanoid') as jest.Mock<any>;
+    const dummyId = '_dummy_id';
+    nanoIdMock.mockReturnValueOnce(dummyId);
 
     const value = mountBuffer(new Buffer(''));
 
-    expect(value).to.equal(`${memPathId}/${dummyCuid}`);
-    expect(cuidMock.mock.calls).to.have.lengthOf(1);
+    expect(value).to.equal(`${memPathId}/${dummyId}`);
+    expect(nanoIdMock.mock.calls).to.have.lengthOf(1);
   });
 });
