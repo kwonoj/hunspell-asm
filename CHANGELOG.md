@@ -1,3 +1,13 @@
+<a name="0.0.8"></a>
+## [0.0.8](https://github.com/kwonoj/hunspell-asm/compare/v0.0.7...v0.0.8) (2017-09-10)
+
+
+### Features
+
+* **index:** export interfaces ([39ec725](https://github.com/kwonoj/hunspell-asm/commit/39ec725))
+
+
+
 <a name="0.0.7"></a>
 ## [0.0.7](https://github.com/kwonoj/hunspell-asm/compare/v0.0.6...v0.0.7) (2017-09-08)
 
