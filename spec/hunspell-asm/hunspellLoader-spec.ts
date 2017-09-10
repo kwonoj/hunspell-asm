@@ -7,7 +7,7 @@ import hunspellLoaderType = require('../../src/hunspellLoader');
 describe('hunspellLoader', () => {
   let hunspellLoader: typeof hunspellLoaderType.hunspellLoader;
   let asmModule: HunspellAsmModule;
-  let cuidMock: jest.Mock<any>;
+  let nanoidMock: jest.Mock<any>;
   let mkdirMock: jest.Mock<any>;
 
   beforeEach(() => {
@@ -15,9 +15,9 @@ describe('hunspellLoader', () => {
     jest.mock('../../src/mountBuffer');
     jest.mock('../../src/unmount');
     jest.mock('../../src/util/isNode');
-    jest.mock('cuid');
+    jest.mock('nanoid');
     //tslint:disable-next-line:no-require-imports
-    cuidMock = require('cuid');
+    nanoidMock = require('nanoid');
     mkdirMock = jest.fn();
 
     asmModule = {
@@ -32,20 +32,20 @@ describe('hunspellLoader', () => {
   });
 
   it('should generate root path for mounting memory buffer file', () => {
-    const dummyCuid = 'meh';
-    cuidMock.mockReturnValueOnce(dummyCuid);
+    const dummyNanoid = 'meh';
+    nanoidMock.mockReturnValueOnce(dummyNanoid);
     hunspellLoader(asmModule);
 
     expect(mkdirMock.mock.calls.length).to.gte(1);
-    expect(mkdirMock.mock.calls[0][0]).to.equal(`/${dummyCuid}`);
+    expect(mkdirMock.mock.calls[0][0]).to.equal(`/${dummyNanoid}`);
   });
 
   it('should generate root path for mounting phsyical directory', () => {
     //tslint:disable-next-line:no-require-imports
     (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(true);
 
-    let cuidCount = 0;
-    cuidMock.mockImplementation(() => `meh${++cuidCount}`);
+    let idCount = 0;
+    nanoidMock.mockImplementation(() => `meh${++idCount}`);
     hunspellLoader(asmModule);
 
     expect(mkdirMock.mock.calls).to.have.lengthOf(2);
@@ -56,8 +56,8 @@ describe('hunspellLoader', () => {
     //tslint:disable-next-line:no-require-imports
     (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(false);
 
-    let cuidCount = 0;
-    cuidMock.mockImplementation(() => `meh${++cuidCount}`);
+    let idCount = 0;
+    nanoidMock.mockImplementation(() => `meh${++idCount}`);
     hunspellLoader(asmModule);
 
     expect(mkdirMock.mock.calls).to.have.lengthOf(1);
@@ -90,7 +90,7 @@ describe('HunspellFactory', () => {
   };
 
   beforeEach(() => {
-    let mockCuidCount = 0;
+    let mockIdCount = 0;
     mountDirMock = jest.fn();
     mockMountDirFactory = jest.fn(() => mountDirMock);
     jest.mock('../../src/mountDirectory', () => ({ mountDirectory: mockMountDirFactory }));
@@ -102,7 +102,7 @@ describe('HunspellFactory', () => {
     unmountMock = jest.fn();
     mockUnmountFactory = jest.fn(() => unmountMock);
     jest.mock('../../src/unmount', () => ({ unmount: mockUnmountFactory }));
-    jest.mock('cuid', () => jest.fn(() => `${++mockCuidCount}`));
+    jest.mock('nanoid', () => jest.fn(() => `${++mockIdCount}`));
 
     mockHunspellInterface = {
       create: jest.fn(),

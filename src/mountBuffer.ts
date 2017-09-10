@@ -1,4 +1,4 @@
-import * as cuid from 'cuid';
+import * as nanoid from 'nanoid';
 import { FS } from './HunspellAsmModule';
 import { isMounted } from './isMounted';
 import { log } from './util/logger';
@@ -18,7 +18,7 @@ import { log } from './util/logger';
 
 /** @internal */
 export const mountBuffer = (FS: FS, memPathId: string) => (contents: ArrayBufferView, fileName?: string): string => {
-  const file = fileName || cuid();
+  const file = fileName || nanoid(45);
   const mountedFilePath = `${memPathId}/${file}`;
 
   if (isMounted(FS, mountedFilePath, 'file')) {
