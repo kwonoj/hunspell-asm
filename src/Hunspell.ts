@@ -14,6 +14,7 @@ export interface Hunspell {
   /**
    * Check spell for given word using current hunspell instance.
    *
+   * @returns {boolean} false for misspelled, true otherwise.
    */
   spell: (word: string) => boolean;
 
