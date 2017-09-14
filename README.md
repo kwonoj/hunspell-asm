@@ -31,10 +31,12 @@ const hunspellFactory = await loadModule();
 `loadModule` loads wasm binary, initialize it, and returns factory function to create instance of hunspell.
 
 ```js
-loadModule(binaryEndpoint?: string): Promise<HunspellFactory>
+loadModule(binaryEndpoint?: string, environment?: ENVIRONMENT): Promise<HunspellFactory>
 ```
 
 It accepts `binaryEndpoint` as optional parameter for mainly browser environment. Unlike node, browser can't access wasm / asm binary directly in filesystem but have to `fetch`. Provide endpoints for paths to `dist/src/lib/**/*.(wasm|mem)` and it'll be fetched runtime. On node, this endpoint can be used to override physical path to binaries.
+
+Additionally it accepts `environment` as well, allow to set running environment and ignores internal runtime detection. This is mostly for [Electron](https://electron.atom.io/)'s renderer process where node.js and `fetch` are available both, to selectively opt-in which way to use. It is important to note `loadModule` doesn't interop incorrect option value matching, like try to load correct binary when supply endpoint to file path with set env to browser.
 
 ## Mounting files
 
