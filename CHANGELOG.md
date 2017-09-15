@@ -1,3 +1,13 @@
+<a name="0.0.12"></a>
+## [0.0.12](https://github.com/kwonoj/hunspell-asm/compare/v0.0.11...v0.0.12) (2017-09-15)
+
+
+### Bug Fixes
+
+* **environment:** fix browser environment module loading ([b2e16d6](https://github.com/kwonoj/hunspell-asm/commit/b2e16d6))
+
+
+
 <a name="0.0.11"></a>
 ## [0.0.11](https://github.com/kwonoj/hunspell-asm/compare/v0.0.10...v0.0.11) (2017-09-15)
 
