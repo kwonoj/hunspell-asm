@@ -1,3 +1,15 @@
+<a name="0.0.11"></a>
+## [0.0.11](https://github.com/kwonoj/hunspell-asm/compare/v0.0.10...v0.0.11) (2017-09-15)
+
+
+### Features
+
+* **hunspell:** bump up hunspell ([4e7b6d6](https://github.com/kwonoj/hunspell-asm/commit/4e7b6d6))
+* **loadmodule:** support environment override ([b79f7cf](https://github.com/kwonoj/hunspell-asm/commit/b79f7cf))
+* **logger:** wire wasm loader logger ([ba59165](https://github.com/kwonoj/hunspell-asm/commit/ba59165))
+
+
+
 <a name="0.0.10"></a>
 ## [0.0.10](https://github.com/kwonoj/hunspell-asm/compare/v0.0.9...v0.0.10) (2017-09-12)
 
