@@ -14,7 +14,7 @@ describe('hunspellLoader', () => {
     jest.mock('../../src/mountDirectory');
     jest.mock('../../src/mountBuffer');
     jest.mock('../../src/unmount');
-    jest.mock('../../src/util/isNode');
+    jest.mock('emscripten-wasm-loader', () => ({ isNode: jest.fn() }));
     jest.mock('nanoid');
     //tslint:disable-next-line:no-require-imports
     nanoidMock = require('nanoid');
@@ -42,7 +42,7 @@ describe('hunspellLoader', () => {
 
   it('should generate root path for mounting phsyical directory', () => {
     //tslint:disable-next-line:no-require-imports
-    (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(true);
+    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(true);
 
     let idCount = 0;
     nanoidMock.mockImplementation(() => `meh${++idCount}`);
@@ -54,7 +54,7 @@ describe('hunspellLoader', () => {
 
   it('should not generate root path for phsyical directory if envoironment is not node', () => {
     //tslint:disable-next-line:no-require-imports
-    (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(false);
+    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(false);
 
     let idCount = 0;
     nanoidMock.mockImplementation(() => `meh${++idCount}`);

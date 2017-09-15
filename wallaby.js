@@ -1,6 +1,8 @@
 module.exports = (wallaby) => ({
   files: [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/lib/asm/hunspell.js",
+    "src/lib/wasm/hunspell.js"
   ],
 
   tests: [

@@ -10,7 +10,7 @@ describe('mountDirectory', () => {
   beforeEach(() => {
     jest.mock('path');
     jest.mock('../../src/isMounted');
-    jest.mock('../../src/util/isNode');
+    jest.mock('emscripten-wasm-loader', () => ({ isNode: jest.fn() }));
     jest.mock('../../src/mkdirTree');
 
     fsMock = {
@@ -26,14 +26,14 @@ describe('mountDirectory', () => {
 
   it('should throw if environment is not node', () => {
     //tslint:disable-next-line:no-require-imports
-    (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(false);
+    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(false);
 
     expect(() => mountDirectory('/user')).to.throw();
   });
 
   it('should return if path is already mounted', () => {
     //tslint:disable:no-require-imports
-    (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(true);
+    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(true);
     (require('path').join as jest.Mock<any>).mockImplementationOnce((...args: Array<any>) => args.join('/'));
     (require('path').resolve as jest.Mock<any>).mockImplementationOnce((arg: string) => arg);
     (require('../../src/isMounted').isMounted as jest.Mock<any>).mockReturnValueOnce(true);
@@ -49,7 +49,7 @@ describe('mountDirectory', () => {
 
   it('should create and mount for new path provided', () => {
     //tslint:disable:no-require-imports
-    (require('../../src/util/isNode').isNode as jest.Mock<any>).mockReturnValueOnce(true);
+    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(true);
     (require('path').join as jest.Mock<any>).mockImplementationOnce((...args: Array<any>) => args.join('/'));
     (require('path').resolve as jest.Mock<any>).mockImplementation((arg: string) => arg);
     (require('../../src/isMounted').isMounted as jest.Mock<any>).mockReturnValueOnce(false);

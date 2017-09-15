@@ -1,8 +1,8 @@
+import { isNode } from 'emscripten-wasm-loader';
 import * as unixify from 'unixify';
 import { FS } from './HunspellAsmModule';
 import { isMounted } from './isMounted';
 import { mkdirTree } from './mkdirTree';
-import { isNode } from './util/isNode';
 import { log } from './util/logger';
 
 /**

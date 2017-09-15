@@ -1,10 +1,10 @@
+import { isNode } from 'emscripten-wasm-loader';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { mountBuffer } from './mountBuffer';
 import { mountDirectory } from './mountDirectory';
 import { unmount } from './unmount';
-import { isNode } from './util/isNode';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
 

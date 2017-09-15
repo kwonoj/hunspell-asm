@@ -46,4 +46,5 @@ export interface HunspellAsmModule {
   };
   getValue: <T = any>(ptr: number, type: string, nosafe?: boolean) => T;
   Pointer_stringify: (ptr: number) => string;
+  initializeRuntime(): Promise<boolean>;
 }
