@@ -1,3 +1,13 @@
+<a name="0.0.14"></a>
+## [0.0.14](https://github.com/kwonoj/hunspell-asm/compare/v0.0.13...v0.0.14) (2017-09-18)
+
+
+### Bug Fixes
+
+* **preamble:** support electron without require ([cced45a](https://github.com/kwonoj/hunspell-asm/commit/cced45a))
+
+
+
 <a name="0.0.13"></a>
 ## [0.0.13](https://github.com/kwonoj/hunspell-asm/compare/v0.0.12...v0.0.13) (2017-09-16)
 
