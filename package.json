@@ -11,8 +11,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "prettier --write --single-quote --print-width 120 --jsx-bracket-same-line true",
-      "tslint --fix --type-check --project tsconfig.json",
+      "prettier --write --single-quote --print-width 120 --jsx-bracket-same-line true --ignore-path ./src/lib/*.js",
+      "tslint --fix --type-check --project tsconfig.json --exclude ./src/lib",
       "git add"
     ]
   },
