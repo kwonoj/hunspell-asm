@@ -1,4 +1,4 @@
-import { isNode } from 'emscripten-wasm-loader';
+import { ENVIRONMENT } from 'emscripten-wasm-loader';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
@@ -18,7 +18,7 @@ import { wrapHunspellInterface } from './wrapHunspellInterface';
  */
 
 /** @internal */
-export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory => {
+export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRONMENT): HunspellFactory => {
   const { cwrap, FS, stringToUTF8, Runtime, getValue, Pointer_stringify } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
@@ -28,7 +28,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
   log(`hunspellLoader: mount path for bufferFile created at ${memPathId}`);
 
   const nodePathId = `/${nanoid(45)}`;
-  if (isNode()) {
+  if (environment === ENVIRONMENT.NODE) {
     FS.mkdir(nodePathId);
     log(`hunspellLoader: mount path for directory created at ${nodePathId}`);
   }
@@ -41,7 +41,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
   };
 
   return {
-    mountDirectory: mountDirectory(FS, nodePathId),
+    mountDirectory: mountDirectory(FS, nodePathId, environment),
     mountBuffer: mountBuffer(FS, memPathId),
     unmount: unmount(FS, memPathId),
     create: (affPath: string, dictPath: string) => {

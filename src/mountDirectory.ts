@@ -1,4 +1,4 @@
-import { isNode } from 'emscripten-wasm-loader';
+import { ENVIRONMENT } from 'emscripten-wasm-loader';
 import * as unixify from 'unixify';
 import { FS } from './HunspellAsmModule';
 import { isMounted } from './isMounted';
@@ -17,8 +17,8 @@ import { log } from './util/logger';
  */
 
 /** @internal */
-export const mountDirectory = (FS: FS, nodePathId: string) => (dirPath: string): string => {
-  if (!isNode()) {
+export const mountDirectory = (FS: FS, nodePathId: string, environment: ENVIRONMENT) => (dirPath: string): string => {
+  if (environment !== ENVIRONMENT.NODE) {
     throw new Error('Mounting physical directory is not supported other than node.js environment');
   }
 

@@ -15,7 +15,7 @@ export const loadModule: (
   binaryEndpoint?: string,
   environment?: ENVIRONMENT
 ) => Promise<HunspellFactory> = getModuleLoader<HunspellFactory, HunspellAsmModule>(
-  (runtime: HunspellAsmModule) => hunspellLoader(runtime),
+  (runtime: HunspellAsmModule, environment: ENVIRONMENT) => hunspellLoader(runtime, environment),
   {
     //tslint:disable-next-line:no-require-imports
     dir: isNode() ? require('path').dirname(require.resolve(`${asmPath}/hunspell`)) : null,
