@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { ENVIRONMENT } from 'emscripten-wasm-loader';
 import { HunspellAsmModule } from '../../src/HunspellAsmModule';
 import { HunspellFactory } from '../../src/HunspellFactory';
 //tslint:disable-next-line:no-require-imports
@@ -14,7 +15,6 @@ describe('hunspellLoader', () => {
     jest.mock('../../src/mountDirectory');
     jest.mock('../../src/mountBuffer');
     jest.mock('../../src/unmount');
-    jest.mock('emscripten-wasm-loader', () => ({ isNode: jest.fn() }));
     jest.mock('nanoid');
     //tslint:disable-next-line:no-require-imports
     nanoidMock = require('nanoid');
@@ -34,38 +34,32 @@ describe('hunspellLoader', () => {
   it('should generate root path for mounting memory buffer file', () => {
     const dummyNanoid = 'meh';
     nanoidMock.mockReturnValueOnce(dummyNanoid);
-    hunspellLoader(asmModule);
+    hunspellLoader(asmModule, ENVIRONMENT.NODE);
 
     expect(mkdirMock.mock.calls.length).to.gte(1);
     expect(mkdirMock.mock.calls[0][0]).to.equal(`/${dummyNanoid}`);
   });
 
   it('should generate root path for mounting phsyical directory', () => {
-    //tslint:disable-next-line:no-require-imports
-    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(true);
-
     let idCount = 0;
     nanoidMock.mockImplementation(() => `meh${++idCount}`);
-    hunspellLoader(asmModule);
+    hunspellLoader(asmModule, ENVIRONMENT.NODE);
 
     expect(mkdirMock.mock.calls).to.have.lengthOf(2);
     expect(mkdirMock.mock.calls).to.deep.equal([['/meh1'], ['/meh2']]);
   });
 
   it('should not generate root path for phsyical directory if envoironment is not node', () => {
-    //tslint:disable-next-line:no-require-imports
-    (require('emscripten-wasm-loader').isNode as jest.Mock<any>).mockReturnValueOnce(false);
-
     let idCount = 0;
     nanoidMock.mockImplementation(() => `meh${++idCount}`);
-    hunspellLoader(asmModule);
+    hunspellLoader(asmModule, ENVIRONMENT.WEB);
 
     expect(mkdirMock.mock.calls).to.have.lengthOf(1);
     expect(mkdirMock.mock.calls).to.deep.equal([['/meh1']]);
   });
 
   it('should return HunspellFactory instance', () => {
-    const value = hunspellLoader(asmModule);
+    const value = hunspellLoader(asmModule, ENVIRONMENT.NODE);
 
     expect(value).to.be.a('object');
     expect(Object.keys(value)).to.deep.equal(['mountDirectory', 'mountBuffer', 'unmount', 'create']);
@@ -129,7 +123,7 @@ describe('HunspellFactory', () => {
     } as any;
 
     //tslint:disable-next-line:no-require-imports
-    hunspellFactory = require('../../src/hunspellLoader').hunspellLoader(asmModule);
+    hunspellFactory = require('../../src/hunspellLoader').hunspellLoader(asmModule, ENVIRONMENT.NODE);
   });
 
   it('should export mount functions', () => {
@@ -137,7 +131,7 @@ describe('HunspellFactory', () => {
     expect(mockMountBufferFactory.mock.calls[0]).to.deep.equal([asmModule.FS, '/1']);
 
     expect(mockMountDirFactory.mock.calls).to.have.lengthOf(1);
-    expect(mockMountDirFactory.mock.calls[0]).to.deep.equal([asmModule.FS, '/2']);
+    expect(mockMountDirFactory.mock.calls[0]).to.deep.equal([asmModule.FS, '/2', ENVIRONMENT.NODE]);
 
     expect(mockUnmountFactory.mock.calls).to.have.lengthOf(1);
     expect(mockUnmountFactory.mock.calls[0]).to.deep.equal([asmModule.FS, '/1']);
