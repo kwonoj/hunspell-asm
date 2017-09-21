@@ -1,24 +1,34 @@
-import { ENVIRONMENT, getModuleLoader, isNode, isWasmEnabled } from 'emscripten-wasm-loader';
-import { HunspellAsmModule } from './HunspellAsmModule';
+import { ENVIRONMENT, isWasmEnabled } from 'emscripten-wasm-loader';
+import { getLoader } from './getLoader';
 import { HunspellFactory } from './HunspellFactory';
-import { hunspellLoader } from './hunspellLoader';
 import { log } from './util/logger';
 
-const asmPath = `./lib/${isWasmEnabled() ? 'wasm' : 'asm'}`;
-log(`loadModule: load hunspell module loader from `, asmPath);
-
-//imports MODULARIZED emscripten preamble
-//tslint:disable-next-line:no-require-imports no-var-requires
-const runtimeModule = require(`${asmPath}/hunspell`);
-
-export const loadModule: (
+/**
+ * Load, initialize wasm / asm.js binary to use actual cld wasm instances.
+ *
+ * @param {binaryEndpoint} [string] For overring path to wasm binary on node.js or browser.
+ * @param {environment} [ENVIRONMENT] For overriding running environment
+ *
+ * @returns {Promise<HunspellFactory>} Factory function of cld to allow create instance of hunspell.
+ */
+const loadModule: (binaryEndpoint?: string, environment?: ENVIRONMENT) => Promise<HunspellFactory> = async (
   binaryEndpoint?: string,
   environment?: ENVIRONMENT
-) => Promise<HunspellFactory> = getModuleLoader<HunspellFactory, HunspellAsmModule>(
-  (runtime: HunspellAsmModule) => hunspellLoader(runtime),
-  {
-    //tslint:disable-next-line:no-require-imports
-    dir: isNode() ? require('path').dirname(require.resolve(`${asmPath}/hunspell`)) : null,
-    runtimeModule
+) => {
+  const binaryPath = `./lib/${isWasmEnabled() ? 'wasm' : 'asm'}`;
+
+  try {
+    return await getLoader(binaryPath, binaryEndpoint, environment);
+  } catch (e) {
+    log(`loadModule: cannot load module from `, binaryPath);
+
+    if (!isWasmEnabled()) {
+      throw e;
+    } else {
+      log(`loadModule: try to fallback to asm.js runtime`);
+      return await getLoader(`./lib/asm`, binaryEndpoint, environment);
+    }
   }
-);
+};
+
+export { loadModule };

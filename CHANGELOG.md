@@ -1,3 +1,18 @@
+<a name="0.0.15"></a>
+## [0.0.15](https://github.com/kwonoj/hunspell-asm/compare/v0.0.14...v0.0.15) (2017-09-21)
+
+
+### Bug Fixes
+
+* **mountdirectory:** accept environment instead of internal detect ([b24dcee](https://github.com/kwonoj/hunspell-asm/commit/b24dcee))
+
+
+### Features
+
+* **loadmodule:** fallback to asm.js when wasm load fail ([bac803c](https://github.com/kwonoj/hunspell-asm/commit/bac803c))
+
+
+
 <a name="0.0.14"></a>
 ## [0.0.14](https://github.com/kwonoj/hunspell-asm/compare/v0.0.13...v0.0.14) (2017-09-18)
 
