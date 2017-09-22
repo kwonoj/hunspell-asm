@@ -11,7 +11,7 @@ enum mockENVIRONMENT {
 }
 
 describe('getLoader', () => {
-  const binaryPath = './lib/asm';
+  const binaryPath = './lib/wasm';
   const binaryEndpoint = 'boo';
 
   let getLoader: typeof getLoaderType.getLoader;
@@ -58,7 +58,7 @@ describe('getLoader', () => {
     const getModuleLoaderCalls = (require('emscripten-wasm-loader').getModuleLoader as jest.Mock<any>).mock.calls;
     expect(getModuleLoaderCalls).to.have.lengthOf(1);
     //partial match to check dir value only, do not verify loaded runtime
-    expect(getModuleLoaderCalls[0][1].dir).contains(path.join('lib', 'asm'));
+    expect(getModuleLoaderCalls[0][1].dir).contains(path.join('lib', 'wasm'));
 
     const moduleLoaderCalls = mockGetModuleLoader.mock.calls;
     expect(moduleLoaderCalls).to.have.lengthOf(1);
@@ -90,7 +90,7 @@ describe('getLoader', () => {
     const getModuleLoaderCalls = (require('emscripten-wasm-loader').getModuleLoader as jest.Mock<any>).mock.calls;
     expect(getModuleLoaderCalls).to.have.lengthOf(1);
     //partial match to check dir value only, do not verify loaded runtime
-    expect(getModuleLoaderCalls[0][1].dir).contains(path.join('lib', 'asm'));
+    expect(getModuleLoaderCalls[0][1].dir).contains(path.join('lib', 'wasm'));
 
     const moduleLoaderCalls = mockGetModuleLoader.mock.calls;
     expect(moduleLoaderCalls).to.have.lengthOf(1);
