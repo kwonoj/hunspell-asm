@@ -1,6 +1,6 @@
 {
   "name": "hunspell-asm",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -73,7 +73,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "emscripten-wasm-loader": "0.0.7",
+    "emscripten-wasm-loader": "0.0.8",
     "getroot": "^1.0.0",
     "nanoid": "^0.2.1",
     "tslib": "^1.7.1",
