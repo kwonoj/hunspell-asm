@@ -73,7 +73,7 @@
     "typescript": "^2.6.1"
   },
   "dependencies": {
-    "emscripten-wasm-loader": "0.0.8",
+    "emscripten-wasm-loader": "1.0.0",
     "nanoid": "^1.0.0",
     "tslib": "^1.7.1",
     "unixify": "^1.0.0"
