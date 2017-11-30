@@ -1,3 +1,25 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/kwonoj/hunspell-asm/compare/v0.0.17...v1.0.0) (2017-11-30)
+
+
+### Bug Fixes
+
+* **package:** update nanoid to version 1.0.0 ([f69df27](https://github.com/kwonoj/hunspell-asm/commit/f69df27))
+
+
+### Features
+
+* **hunspell:** update hunspell into single file binary ([8b9e6ea](https://github.com/kwonoj/hunspell-asm/commit/8b9e6ea))
+* **loadmodule:** support single file binary load ([16ff979](https://github.com/kwonoj/hunspell-asm/commit/16ff979))
+* **logger:** enablelogger appends scope ([36c429c](https://github.com/kwonoj/hunspell-asm/commit/36c429c))
+
+
+### BREAKING CHANGES
+
+* **loadmodule:** now runs on native-wasm supported runtime only
+
+
+
 <a name="0.0.17"></a>
 ## [0.0.17](https://github.com/kwonoj/hunspell-asm/compare/v0.0.16...v0.0.17) (2017-10-10)
 

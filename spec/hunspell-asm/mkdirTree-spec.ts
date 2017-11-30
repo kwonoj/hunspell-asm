@@ -1,38 +1,30 @@
 import { expect } from 'chai';
-import { FS } from '../../src/HunspellAsmModule';
-//tslint:disable-next-line:no-require-imports
-import mkdirTreeType = require('../../src/mkdirTree');
+import { mkdirTree } from '../../src/mkdirTree';
+
+const getFsMock = () => ({
+  mkdir: jest.fn()
+});
 
 describe('mkdirTree', () => {
-  let mkdirTree: typeof mkdirTreeType.mkdirTree;
-  let fsMock: FS;
-  let mkdirMock: jest.Mock<any>;
-
-  beforeEach(() => {
-    //tslint:disable-next-line:no-require-imports
-    mkdirTree = require('../../src/mkdirTree').mkdirTree;
-    mkdirMock = jest.fn();
-    fsMock = {
-      mkdir: mkdirMock
-    } as any;
-  });
-
   it('should create single dir', () => {
+    const fsMock = getFsMock();
     mkdirTree(fsMock as any, '/virtual/');
 
-    expect(mkdirMock.mock.calls).to.have.lengthOf(1);
-    expect(mkdirMock.mock.calls[0][0]).to.equal('/virtual');
+    expect(fsMock.mkdir.mock.calls).to.have.lengthOf(1);
+    expect(fsMock.mkdir.mock.calls[0][0]).to.equal('/virtual');
   });
 
   it('should recursively create nested dir', () => {
+    const fsMock = getFsMock();
     mkdirTree(fsMock as any, '/virtual/test/dir');
 
-    expect(mkdirMock.mock.calls).to.have.lengthOf(3);
-    expect(mkdirMock.mock.calls).to.deep.equal([['/virtual'], ['/virtual/test'], ['/virtual/test/dir']]);
+    expect(fsMock.mkdir.mock.calls).to.have.lengthOf(3);
+    expect(fsMock.mkdir.mock.calls).to.deep.equal([['/virtual'], ['/virtual/test'], ['/virtual/test/dir']]);
   });
 
   it('should not throw if try to create existing dir', () => {
-    mkdirMock.mockImplementationOnce(() => {
+    const fsMock = getFsMock();
+    fsMock.mkdir.mockImplementationOnce(() => {
       const e = new Error();
       (e as any).errno = 17;
       throw e;
@@ -42,7 +34,8 @@ describe('mkdirTree', () => {
   });
 
   it('should throw if error occurred while creating dir', () => {
-    mkdirMock.mockImplementationOnce(() => {
+    const fsMock = getFsMock();
+    fsMock.mkdir.mockImplementationOnce(() => {
       throw new Error();
     });
 
