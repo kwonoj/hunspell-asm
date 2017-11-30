@@ -14,8 +14,12 @@ const log: logFunctionType = (...args: Array<any>) => (logInstance as any)(...ar
  * @param logger function to log.
  */
 const enableLogger = (logger: logFunctionType) => {
-  logInstance = logger;
-  emscriptenEnableLogger(logger);
+  const scopedLogger = (scope: string) => (message: string, ...optionalParams: Array<any>) => {
+    logger(`${scope}::${message}`, ...optionalParams);
+  };
+
+  logInstance = scopedLogger(`hunspell`);
+  emscriptenEnableLogger(scopedLogger(`hunspellLoader`));
 };
 
 export { enableLogger, logFunctionType, log };
