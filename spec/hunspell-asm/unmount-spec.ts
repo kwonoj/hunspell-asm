@@ -1,29 +1,32 @@
 import { expect } from 'chai';
-import { FS } from '../../src/HunspellAsmModule';
+import { isMounted } from '../../src/isMounted';
+import { unmount } from '../../src/unmount';
+
+jest.mock('../../src/isMounted');
+const memPathId: string = 'memPathPrefixDummy';
+const getFsMock = () => ({
+  unlink: jest.fn(),
+  unmount: jest.fn(),
+  rmdir: jest.fn()
+});
 
 describe('unmount', () => {
-  const memPathId: string = 'memPathPrefixDummy';
-  let unmount: (mountedPath: string) => void;
-  let fsMock: FS;
+  let unmountFn: (mountedPath: string) => void;
+  let fsMock: {
+    unlink: jest.Mock<any>,
+    unmount: jest.Mock<any>,
+    rmdir: jest.Mock<any>
+  };
 
   beforeEach(() => {
-    jest.mock('../../src/isMounted');
-
-    fsMock = {
-      unlink: jest.fn(),
-      unmount: jest.fn(),
-      rmdir: jest.fn()
-    } as any;
-
-    //tslint:disable-next-line:no-require-imports
-    unmount = require('../../src/unmount').unmount(fsMock, memPathId);
+    fsMock = getFsMock();
+    unmountFn = unmount(fsMock as any, memPathId);
   });
 
   it('should return if path is not mounted', () => {
-    //tslint:disable-next-line:no-require-imports
-    (require('../../src/isMounted').isMounted as jest.Mock<any>).mockReturnValue(false);
+    (isMounted as jest.Mock<any>).mockReturnValue(false);
 
-    unmount('dummyValue');
+    unmountFn('dummyValue');
     Object.keys(fsMock)
       .map(key => fsMock[key])
       .forEach((mock: jest.Mock<any>) => expect(mock.mock.calls).to.have.lengthOf(0));
@@ -31,12 +34,11 @@ describe('unmount', () => {
 
   it('should unmount physical path', () => {
     const mountPath = `${memPathId}/dummydirPath`;
-    //tslint:disable-next-line:no-require-imports
-    (require('../../src/isMounted').isMounted as jest.Mock<any>).mockImplementation(
+    (isMounted as jest.Mock<any>).mockImplementation(
       (_fs: any, path: string, type: string) => path === mountPath && type === 'dir'
     );
 
-    unmount(mountPath);
+    unmountFn(mountPath);
 
     const unmountMock = fsMock.unmount as jest.Mock<any>;
     const rmdirMock = fsMock.rmdir as jest.Mock<any>;
@@ -46,16 +48,17 @@ describe('unmount', () => {
     expect(unmountMock.mock.calls[0]).to.deep.equal([mountPath]);
     expect(rmdirMock.mock.calls).to.have.lengthOf(1);
     expect(rmdirMock.mock.calls[0]).to.deep.equal([mountPath]);
+
+    jest.resetAllMocks();
   });
 
   it('should unmount and delete bufferFile', () => {
     const mountPath = `${memPathId}/dummyFile.aff`;
-    //tslint:disable-next-line:no-require-imports
-    (require('../../src/isMounted').isMounted as jest.Mock<any>).mockImplementation(
+    (isMounted as jest.Mock<any>).mockImplementation(
       (_fs: any, path: string, type: string) => path === mountPath && type === 'file'
     );
 
-    unmount(mountPath);
+    unmountFn(mountPath);
 
     const unlinkMock = fsMock.unlink as jest.Mock<any>;
     expect(unlinkMock.mock.calls).to.have.lengthOf(1);
@@ -63,5 +66,7 @@ describe('unmount', () => {
 
     expect((fsMock.unmount as jest.Mock<any>).mock.calls).to.have.lengthOf(0);
     expect((fsMock.rmdir as jest.Mock<any>).mock.calls).to.have.lengthOf(0);
+
+    jest.resetAllMocks();
   });
 });
