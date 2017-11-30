@@ -1,5 +1,4 @@
 //tslint:disable:no-console
-import { isWasmEnabled } from 'emscripten-wasm-loader';
 import { loadModule } from '../../src/index';
 import { enableLogger } from '../../src/util/logger';
 import { runHunspell } from '../runHunspell';
@@ -7,7 +6,7 @@ import { runHunspell } from '../runHunspell';
 enableLogger(console.log.bind(console));
 
 const runBrowserHunspell = async () => {
-  const hunspellFactory = await loadModule(`../../src/lib/${isWasmEnabled() ? 'wasm' : 'asm'}`);
+  const hunspellFactory = await loadModule();
 
   const aff = await fetch('../../spec/__fixtures__/korean.aff');
   const affBuffer = new Uint8Array(await aff.arrayBuffer());
