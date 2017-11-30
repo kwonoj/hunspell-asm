@@ -1,34 +1,29 @@
-import { ENVIRONMENT, isWasmEnabled } from 'emscripten-wasm-loader';
-import { getLoader } from './getLoader';
+import { ENVIRONMENT, getModuleLoader } from 'emscripten-wasm-loader';
+import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
+import { hunspellLoader } from './hunspellLoader';
 import { log } from './util/logger';
 
 /**
  * Load, initialize wasm / asm.js binary to use actual cld wasm instances.
  *
- * @param {binaryEndpoint} [string] For overring path to wasm binary on node.js or browser.
  * @param {environment} [ENVIRONMENT] For overriding running environment
  *
  * @returns {Promise<HunspellFactory>} Factory function of cld to allow create instance of hunspell.
  */
-const loadModule: (binaryEndpoint?: string, environment?: ENVIRONMENT) => Promise<HunspellFactory> = async (
-  binaryEndpoint?: string,
+const loadModule: (environment?: ENVIRONMENT) => Promise<HunspellFactory> = async (
   environment?: ENVIRONMENT
 ) => {
-  const binaryPath = `./lib/${isWasmEnabled() ? 'wasm' : 'asm'}`;
+  log(`loadModule: loading hunspell module`);
 
-  try {
-    return await getLoader(binaryPath, binaryEndpoint, environment);
-  } catch (e) {
-    log(`loadModule: cannot load module from `, binaryPath);
+  //imports MODULARIZED emscripten preamble
+  const runtimeModule = require(`./lib/hunspell`); //tslint:disable-line:no-require-imports no-var-requires
+  const moduleLoader = await getModuleLoader<HunspellFactory, HunspellAsmModule>(
+    (runtime: HunspellAsmModule, env: ENVIRONMENT) => hunspellLoader(runtime, env),
+    runtimeModule
+  );
 
-    if (!isWasmEnabled()) {
-      throw e;
-    } else {
-      log(`loadModule: try to fallback to asm.js runtime`);
-      return await getLoader(`./lib/asm`, binaryEndpoint, environment);
-    }
-  }
+  return moduleLoader(environment);
 };
 
 export { loadModule };
