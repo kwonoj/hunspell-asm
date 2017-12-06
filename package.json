@@ -7,7 +7,8 @@
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
-    }
+    },
+    "hunspell-version": "e8d39ae-171205"
   },
   "lint-staged": {
     "*.ts": [
@@ -17,6 +18,7 @@
     ]
   },
   "scripts": {
+    "prepare": "ts-node bootstrap.ts",
     "prepublishOnly": "npm-run-all build test",
     "precommit": "lint-staged",
     "prepush": "npm-run-all build test",
@@ -54,6 +56,7 @@
     "@types/jest": "^21.1.8",
     "@types/lodash": "^4.14.87",
     "@types/node": "^8.0.54",
+    "@types/shelljs": "^0.7.6",
     "chai": "^4.0.2",
     "commitizen": "^2.9.6",
     "conventional-changelog": "^1.1.7",
@@ -65,6 +68,7 @@
     "npm-run-all": "^4.1.2",
     "prettier": "^1.8.2",
     "rxjs": "^5.5.3",
+    "shelljs": "^0.7.8",
     "shx": "^0.2.2",
     "ts-jest": "^21.2.4",
     "ts-node": "^3.2.0",
