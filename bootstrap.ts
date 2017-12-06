@@ -20,49 +20,46 @@ const asyncExec = promisify(exec);
 /**
  * Generate sha512 checksum from given string.
  */
-const getChecksum = (content: string) =>
+const calculateChecksumFromFile = async (filePath: string) =>
   crypto
     .createHash('sha512')
-    .update(content, 'utf8')
+    .update(await readFile(filePath, { encoding: 'utf-8' }), 'utf8')
     .digest('hex');
 
 /**
- * Download file, and corresponding checksum from release.
+ * Get remote release checksum.
  */
-const download = async (url: string, fileName: string, dest: string) => {
-  await asyncExec(`wget --directory-prefix=${dest} ${url}`);
-  const { stdout } = exec(`wget -qO- ${url}.sha512`);
-  const sha = stdout.slice(0, stdout.indexOf(' '));
-
-  const downloadedContent = await readFile(path.join(dest, fileName), { encoding: 'utf-8' });
-  return {
-    downloadedContent,
-    sha
-  };
+const getRemoteChecksum = (url: string) => {
+  const { stdout } = exec(`wget -qO- ${url}.sha512`, { silent: true });
+  return (stdout as string).slice(0, (stdout as string).indexOf(' '));
 };
 
 /**
  * Main script execution
  */
 (async () => {
-  console.log(`Downloading hunspell wasm binary version '${version}'`);
-
   const libPath = path.resolve('./src/lib');
   const fileName = 'hunspell.js';
+  const localBinarypath = path.join(libPath, fileName);
+
   const url = `https://github.com/kwonoj/docker-hunspell-wasm/releases/download/${version}/${fileName}`;
 
-  // Clear existing path and recreate, always redownload new binary
+  //Create checksum validator
+  const remoteChecksum = getRemoteChecksum(url);
+  const validateBinary = async () => (await calculateChecksumFromFile(localBinarypath)) === remoteChecksum;
+  const isBinaryExists = () => fs.existsSync(localBinarypath);
+
+  if (isBinaryExists() && (await validateBinary())) {
+    return;
+  }
+
+  console.log(`Downloading hunspell wasm binary version '${version}'`);
+
   rm('-rf', libPath);
   mkdir(libPath);
+  await asyncExec(`wget -q --directory-prefix=${libPath} ${url}`);
 
-  // Download file, validate checksum
-  const { downloadedContent, sha } = await download(url, fileName, libPath);
-  const fileChecksum = getChecksum(downloadedContent);
-
-  if (fileChecksum !== sha) {
-    rm('-rf', libPath);
-    throw new Error(
-      `Hash mismatch between release '${sha}' and actual download ${fileChecksum}, cannot complete bootstrap`
-    );
+  if (!isBinaryExists() || !await validateBinary()) {
+    throw new Error(`Downloaded binary checksum mismatch, cannot complete bootstrap`);
   }
 })();
