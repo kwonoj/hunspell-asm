@@ -8,7 +8,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "e8d39ae-171205"
+    "hunspell-version": "48d7832-180101"
   },
   "lint-staged": {
     "*.ts": [
