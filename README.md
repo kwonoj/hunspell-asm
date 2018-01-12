@@ -20,7 +20,7 @@ npm install hunspell-asm
 
 ## Loading module asynchronously
 
-`Hunspell-asm` relies on wasm binary (or asm.js where wasm is not supported) of hunspell, which need to be initialized first.
+`Hunspell-asm` relies on wasm binary of hunspell, which need to be initialized first.
 
 ```js
 import { loadModule } from 'hunspell-asm';
