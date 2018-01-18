@@ -19,7 +19,7 @@ import { wrapHunspellInterface } from './wrapHunspellInterface';
 
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRONMENT): HunspellFactory => {
-  const { cwrap, FS, stringToUTF8, Runtime, getValue, Pointer_stringify } = asmModule;
+  const { cwrap, FS, stringToUTF8, stackAlloc, stackSave, stackRestore, getValue, Pointer_stringify } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
@@ -35,7 +35,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
 
   const allocString = (value: string) => {
     const len = (value.length << 2) + 1;
-    const ret = Runtime.stackAlloc(len);
+    const ret = stackAlloc(len);
     stringToUTF8(value, ret, len);
     return ret;
   };
@@ -50,14 +50,14 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
         dispose: () => hunspellInterface.destroy(hunspellPtr),
         spell: (word: string) => {
           //let allocated string volatile via manually save / restore stacks, instead of malloc / free
-          const stack = Runtime.stackSave();
+          const stack = stackSave();
           const ret = hunspellInterface.spell(hunspellPtr, allocString(word));
-          Runtime.stackRestore(stack);
+          stackRestore(stack);
           return !!ret;
         },
         suggest: (word: string) => {
-          const stack = Runtime.stackSave();
-          const suggestionListPtr = Runtime.stackAlloc(4);
+          const stack = stackSave();
+          const suggestionListPtr = stackAlloc(4);
           const suggestionCount = hunspellInterface.suggest(hunspellPtr, suggestionListPtr, allocString(word));
           const suggestionListValuePtr = getValue(suggestionListPtr, '*');
 
@@ -69,7 +69,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
               : [];
 
           hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
-          Runtime.stackRestore(stack);
+          stackRestore(stack);
 
           return ret;
         }
