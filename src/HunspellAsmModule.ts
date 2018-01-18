@@ -39,11 +39,9 @@ export interface HunspellAsmModule {
   cwrap: cwrapSignature;
   FS: FS;
   stringToUTF8: stringToUTF8Signature;
-  Runtime: {
-    stackAlloc: (length: number) => number;
-    stackSave: () => number;
-    stackRestore: (stack: number) => void;
-  };
+  stackAlloc: (length: number) => number;
+  stackSave: () => number;
+  stackRestore: (stack: number) => void;
   getValue: <T = any>(ptr: number, type: string, nosafe?: boolean) => T;
   Pointer_stringify: (ptr: number) => string;
   initializeRuntime(): Promise<boolean>;

@@ -8,7 +8,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "48d7832-180101"
+    "hunspell-version": "528348c-180118"
   },
   "lint-staged": {
     "*.ts": [
@@ -50,9 +50,9 @@
   ],
   "homepage": "https://github.com/kwonoj/hunspell-asm#readme",
   "devDependencies": {
-    "@commitlint/cli": "^6.0.1",
+    "@commitlint/cli": "^6.0.2",
     "@commitlint/config-angular": "^6.0.2",
-    "@types/chai": "^4.1.0",
+    "@types/chai": "^4.1.1",
     "@types/jest": "^22.0.1",
     "@types/lodash": "^4.14.92",
     "@types/node": "^9.3.0",
@@ -62,13 +62,13 @@
     "conventional-changelog": "^1.1.7",
     "conventional-changelog-cli": "^1.3.5",
     "husky": "^0.14.3",
-    "jest": "^22.0.6",
+    "jest": "^22.1.3",
     "lint-staged": "^6.0.0",
     "lodash": "^4.17.4",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
     "rxjs": "^5.5.6",
-    "shelljs": "^0.7.8",
+    "shelljs": "^0.8.0",
     "shx": "^0.2.2",
     "ts-jest": "^22.0.1",
     "ts-node": "^4.1.0",
@@ -79,7 +79,7 @@
   "dependencies": {
     "emscripten-wasm-loader": "^1.0.0",
     "nanoid": "^1.0.1",
-    "tslib": "^1.8.1",
+    "tslib": "^1.9.0",
     "unixify": "^1.0.0"
   },
   "engines": {
