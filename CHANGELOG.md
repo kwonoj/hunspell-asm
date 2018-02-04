@@ -1,3 +1,13 @@
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/kwonoj/hunspell-asm/compare/v1.0.0...v1.0.1) (2018-02-04)
+
+
+### Bug Fixes
+
+* **hunspellasmmodule:** update runtime module signature ([cbf45f9](https://github.com/kwonoj/hunspell-asm/commit/cbf45f9))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/kwonoj/hunspell-asm/compare/v0.0.17...v1.0.0) (2017-11-30)
 
