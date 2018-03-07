@@ -6,7 +6,6 @@
     "**/spec/hunspell-asm/**/*-spec.ts"
   ],
   "bail": true,
-  "mapCoverage": true,
   "testEnvironment": "node",
   "moduleFileExtensions": [
     "js",

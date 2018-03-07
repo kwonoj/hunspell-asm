@@ -1,6 +1,6 @@
 {
   "name": "hunspell-asm",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -8,7 +8,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "e6e3c6f-180204"
+    "hunspell-version": "9d74c2b-180306"
   },
   "lint-staged": {
     "*.ts": [
@@ -50,35 +50,35 @@
   ],
   "homepage": "https://github.com/kwonoj/hunspell-asm#readme",
   "devDependencies": {
-    "@commitlint/cli": "^6.0.2",
-    "@commitlint/config-angular": "^6.0.2",
-    "@types/chai": "^4.1.1",
-    "@types/jest": "^22.0.1",
-    "@types/lodash": "^4.14.92",
-    "@types/node": "^9.3.0",
-    "@types/shelljs": "^0.7.7",
+    "@commitlint/cli": "^6.1.3",
+    "@commitlint/config-angular": "^6.1.3",
+    "@types/chai": "^4.1.2",
+    "@types/jest": "^22.2.0",
+    "@types/lodash": "^4.14.104",
+    "@types/node": "^9.4.6",
+    "@types/shelljs": "^0.7.8",
     "chai": "^4.0.2",
     "commitizen": "^2.9.6",
-    "conventional-changelog": "^1.1.7",
-    "conventional-changelog-cli": "^1.3.5",
+    "conventional-changelog": "^1.1.18",
+    "conventional-changelog-cli": "^1.3.16",
     "husky": "^0.14.3",
-    "jest": "^22.1.3",
+    "jest": "^22.4.2",
     "lint-staged": "^7.0.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.5",
     "npm-run-all": "^4.1.2",
-    "prettier": "^1.10.2",
+    "prettier": "^1.11.1",
     "rxjs": "^5.5.6",
-    "shelljs": "^0.8.0",
+    "shelljs": "^0.8.1",
     "shx": "^0.2.2",
-    "ts-jest": "^22.0.1",
-    "ts-node": "^4.1.0",
+    "ts-jest": "^22.4.1",
+    "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "tslint-no-unused-expression-chai": "0.0.3",
-    "typescript": "^2.6.2"
+    "typescript": "^2.7.2"
   },
   "dependencies": {
     "emscripten-wasm-loader": "^1.0.0",
-    "nanoid": "^1.0.1",
+    "nanoid": "^1.0.2",
     "tslib": "^1.9.0",
     "unixify": "^1.0.0"
   },
