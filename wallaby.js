@@ -12,7 +12,10 @@ module.exports = (wallaby) => ({
   },
 
   env: {
-    type: "node"
+    type: "node",
+    params: {
+      runner: `-r ${require.resolve('esm')}`
+    }
   },
 
   workers: {

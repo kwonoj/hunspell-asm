@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { ENVIRONMENT } from 'emscripten-wasm-loader';
+import { includes } from 'lodash-es';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from '../../src/HunspellAsmModule';
 import { HunspellFactory } from '../../src/HunspellFactory';
@@ -23,6 +24,10 @@ const getAsmModule = () => ({
 });
 
 describe('hunspellLoader', () => {
+  it('dummy', () => {
+    includes([], 'a');
+  });
+
   it('should generate root path for mounting memory buffer file', () => {
     const dummyNanoid = 'meh';
     const asmModule = getAsmModule();
