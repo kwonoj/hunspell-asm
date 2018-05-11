@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as fs from 'fs';
-import { includes } from 'lodash';
+import { includes } from 'lodash-es';
 import * as path from 'path';
 import * as Rx from 'rxjs';
 import * as unixify from 'unixify';
@@ -125,20 +125,25 @@ describe('hunspell', async () => {
     const fixtureList = getFixtureList(baseFixturePath, '.sug');
     fixtureList.filter(x => !includes(['1463589', 'i54633', 'map'], x)).forEach(fixture => {
       const base = path.join(baseFixturePath, `${fixture}`);
-      const suggestions = ([
-        ...fs.readFileSync(`${base}.sug`, 'utf-8').split('\n').filter(x => !!x).map(x => {
-          const splitted = x.split(', ');
-          if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
-            return splitted[0];
-          }
-          const filtered = splitted.filter(word => !includes(excludedWords, word));
-          if (filtered.length > 0) {
-            return filtered;
-          }
-          return null;
-        })
-      ] || [])
-        .filter(x => !!x);
+      const suggestions = (
+        [
+          ...fs
+            .readFileSync(`${base}.sug`, 'utf-8')
+            .split('\n')
+            .filter(x => !!x)
+            .map(x => {
+              const splitted = x.split(', ');
+              if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
+                return splitted[0];
+              }
+              const filtered = splitted.filter(word => !includes(excludedWords, word));
+              if (filtered.length > 0) {
+                return filtered;
+              }
+              return null;
+            })
+        ] || []
+      ).filter(x => !!x);
 
       const runAssert = async (hunspell: Hunspell) => {
         const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
