@@ -1,7 +1,5 @@
 {
-  "transform": {
-    ".(js|jsx|ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-  },
+  "preset": "ts-jest",
   "testMatch": [
     "**/spec/hunspell-asm/**/*-spec.ts"
   ],
@@ -23,6 +21,9 @@
   "collectCoverageFrom": [
     "src/**/*.{ts, tsx}",
     "!**/*.d.ts"
+  ],
+  "reporters": [
+    "jest-spin-reporter"
   ],
   "coveragePathIgnorePatterns": [
     "<rootDir>/node_modules/",

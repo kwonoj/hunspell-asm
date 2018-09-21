@@ -1,14 +1,14 @@
 //tslint:disable:no-console
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Rx from 'rxjs';
+import { bindNodeCallback } from 'rxjs';
 import { loadModule } from '../../src';
 import { enableLogger } from '../../src/util/logger';
 import { runHunspell } from '../runHunspell';
 
 enableLogger(console.log.bind(console));
 
-const readFile = Rx.Observable.bindNodeCallback(fs.readFile);
+const readFile = bindNodeCallback(fs.readFile);
 const dictPath = path.resolve('../../spec/__fixtures__');
 
 const runBufferFileHunspell = async () => {

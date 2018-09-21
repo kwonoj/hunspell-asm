@@ -2,14 +2,15 @@ import { expect } from 'chai';
 import * as fs from 'fs';
 import { includes } from 'lodash';
 import * as path from 'path';
-import * as Rx from 'rxjs';
+import { bindNodeCallback } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as unixify from 'unixify';
 import { loadModule } from '../../src';
 import { Hunspell } from '../../src/Hunspell';
 import { HunspellFactory } from '../../src/HunspellFactory';
 import { excludedWords } from '../util';
 
-const readFile = Rx.Observable.bindNodeCallback(fs.readFile);
+const readFile = bindNodeCallback(fs.readFile);
 
 const mountDirHunspell = (factory: HunspellFactory, dirPath: string, fixture: string) => {
   const dir = factory.mountDirectory(dirPath);
@@ -82,7 +83,7 @@ describe('hunspell', async () => {
   ) => {
     const runAssert = async (hunspell: Hunspell) => {
       const words: Array<string> = await (readFile as any)(`${path.join(dirPath, fixture)}${testType}`, 'utf-8')
-        .map((value: string) => value.split('\n').filter(x => !!x))
+        .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
         .toPromise();
 
       words.filter(word => !includes(excludedWords, word)).forEach(word => {
@@ -125,24 +126,29 @@ describe('hunspell', async () => {
     const fixtureList = getFixtureList(baseFixturePath, '.sug');
     fixtureList.filter(x => !includes(['1463589', 'i54633', 'map'], x)).forEach(fixture => {
       const base = path.join(baseFixturePath, `${fixture}`);
-      const suggestions = ([
-        ...fs.readFileSync(`${base}.sug`, 'utf-8').split('\n').filter(x => !!x).map(x => {
-          const splitted = x.split(', ');
-          if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
-            return splitted[0];
-          }
-          const filtered = splitted.filter(word => !includes(excludedWords, word));
-          if (filtered.length > 0) {
-            return filtered;
-          }
-          return null;
-        })
-      ] || [])
-        .filter(x => !!x);
+      const suggestions = (
+        [
+          ...fs
+            .readFileSync(`${base}.sug`, 'utf-8')
+            .split('\n')
+            .filter(x => !!x)
+            .map(x => {
+              const splitted = x.split(', ');
+              if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
+                return splitted[0];
+              }
+              const filtered = splitted.filter(word => !includes(excludedWords, word));
+              if (filtered.length > 0) {
+                return filtered;
+              }
+              return null;
+            })
+        ] || []
+      ).filter(x => !!x);
 
       const runAssert = async (hunspell: Hunspell) => {
         const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
-          .map((value: string) => value.split('\n').filter(x => !!x))
+          .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
           .toPromise();
 
         const suggested: Array<string | Array<string>> = [];
