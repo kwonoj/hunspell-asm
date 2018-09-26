@@ -61,7 +61,7 @@
     "commitizen": "^2.10.1",
     "conventional-changelog": "^2.0.3",
     "conventional-changelog-cli": "^2.0.5",
-    "husky": "^0.14.3",
+    "husky": "^1.0.0",
     "jest": "^23.6.0",
     "jest-spin-reporter": "^1.0.1",
     "lint-staged": "^7.3.0",
