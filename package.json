@@ -58,7 +58,7 @@
     "@types/node": "^10.11.2",
     "@types/shelljs": "^0.8.0",
     "chai": "^4.0.2",
-    "commitizen": "^2.10.1",
+    "commitizen": "^3.0.0",
     "conventional-changelog": "^2.0.3",
     "conventional-changelog-cli": "^2.0.5",
     "husky": "^1.0.0",
