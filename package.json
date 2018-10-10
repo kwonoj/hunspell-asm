@@ -52,7 +52,7 @@
     "@types/chai": "^4.1.6",
     "@types/jest": "^23.3.3",
     "@types/lodash": "^4.14.116",
-    "@types/node": "^10.11.4",
+    "@types/node": "^10.11.7",
     "@types/shelljs": "^0.8.0",
     "chai": "^4.2.0",
     "commitizen": "^3.0.2",
