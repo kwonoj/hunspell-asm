@@ -9,13 +9,13 @@ import { log } from './util/logger';
  *
  * @param {environment} [ENVIRONMENT] For overriding running environment
  *
- * @param {initializeTimeout} [number] Custom timeout to pass for the initialization of the module
+ * @param {timeout} [number] Custom timeout to pass for the initialization of the module
  *
  * @returns {Promise<HunspellFactory>} Factory function of cld to allow create instance of hunspell.
  */
 const loadModule: (environment?: ENVIRONMENT) => Promise<HunspellFactory> = async (
   environment?: ENVIRONMENT,
-  initializeTimeout?: number
+  timeout?: number
 ) => {
   log(`loadModule: loading hunspell module`);
 
@@ -25,7 +25,7 @@ const loadModule: (environment?: ENVIRONMENT) => Promise<HunspellFactory> = asyn
     (runtime: HunspellAsmModule, env: ENVIRONMENT) => hunspellLoader(runtime, env),
     runtimeModule,
     undefined,
-    { timeout: initializeTimeout }
+    { timeout }
   );
 
   return moduleLoader(environment);
