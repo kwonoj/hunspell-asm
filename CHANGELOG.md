@@ -1,3 +1,14 @@
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/kwonoj/hunspell-asm/compare/v1.0.2...v1.1.2) (2018-10-19)
+
+
+### Features
+
+* **loadmodule:** Change timeout option in loadModule to auto-destructure ([925362e](https://github.com/kwonoj/hunspell-asm/commit/925362e))
+* **loadmodule:** Expose timeout option to loadModule ([71c29af](https://github.com/kwonoj/hunspell-asm/commit/71c29af))
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/kwonoj/hunspell-asm/compare/v1.0.1...v1.0.2) (2018-03-07)
 

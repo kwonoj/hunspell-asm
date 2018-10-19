@@ -31,10 +31,10 @@ const hunspellFactory = await loadModule();
 `loadModule` loads wasm binary, initialize it, and returns factory function to create instance of hunspell.
 
 ```js
-loadModule(environment?: ENVIRONMENT, initializeTimeout?: number): Promise<HunspellFactory>
+loadModule(environment?: ENVIRONMENT, timeout?: number): Promise<HunspellFactory>
 ```
 
-It accepts `environment` allow to set running environment and ignores internal runtime detection. This is mostly for [Electron](https://electron.atom.io/)'s renderer process where node.js and `fetch` are available both, to selectively opt-in which way to use. It also accepts `initializeTimeout` which can be used to pass a custom timeout to the loader. Default is 3000ms. It is important to note `loadModule` doesn't interop incorrect option value matching, like try to load correct binary when supply endpoint to file path with set env to browser.
+It accepts `environment` allow to set running environment and ignores internal runtime detection. This is mostly for [Electron](https://electron.atom.io/)'s renderer process where node.js and `fetch` are available both, to selectively opt-in which way to use. It also accepts `timeout` which can be used to pass a custom timeout to the loader. Default is 3000ms. It is important to note `loadModule` doesn't interop incorrect option value matching, like try to load correct binary when supply endpoint to file path with set env to browser.
 
 ## Mounting files
 
