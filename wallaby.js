@@ -1,6 +1,7 @@
 module.exports = (wallaby) => ({
   files: [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    { pattern: 'jest-hunspell-asm.json', instrument: false, load: true }
   ],
 
   tests: [
@@ -23,9 +24,16 @@ module.exports = (wallaby) => ({
   preprocessors: {
     '**/*.js?(x)': file =>
       require('babel-core').transform(file.content, {
-        sourceMap: true,
+        sourceMaps: true,
         filename: file.path,
         presets: ['babel-preset-jest']
       })
+  },
+
+  setup: w => {
+    const jestConfig = (({ resetMocks }) => ({
+      resetMocks
+    }))(require('./jest-hunspell-asm.json'));
+    w.testFramework.configure(jestConfig);
   }
 })
