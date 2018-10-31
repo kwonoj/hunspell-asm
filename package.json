@@ -2,8 +2,15 @@
   "name": "hunspell-asm",
   "version": "1.1.2",
   "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "browser": {
+    "./dist/cjs/lib/hunspell_node.js": "./dist/cjs/lib/hunspell_web.js",
+    "./dist/cjs/lib/hunspell_node.wasm": "./dist/cjs/lib/hunspell_web.wasm",
+    "./dist/esm/lib/hunspell_node.js": "./dist/esm/lib/hunspell_web.js",
+    "./dist/esm/lib/hunspell_node.wasm": "./dist/esm/lib/hunspell_web.wasm"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -19,13 +26,15 @@
   },
   "scripts": {
     "prepare": "node -r ts-node/register bootstrap.ts",
-    "prepublishOnly": "npm-run-all build test",
+    "prepublishOnly": "npm-run-all build:clean build build:lib test",
     "test:hunspell": "jest --config jest-hunspell.json",
     "test:hunspell-asm": "jest --config jest-hunspell-asm.json --coverage",
     "test": "npm-run-all test:*",
     "lint": "tslint src/**/*.ts test/**/*.ts --project tsconfig.json",
     "lint:staged": "lint-staged",
-    "build": "shx rm -rf ./dist && tsc && shx cp -r ./src/lib ./dist/src",
+    "build": "tsc -b --verbose ./src/tsconfig.cjs.json ./src/tsconfig.esm.json ./src/tsconfig.types.json ./spec/tsconfig.json",
+    "build:clean": "shx rm -rf ./dist",
+    "build:lib": "shx cp -r ./src/lib ./dist/cjs && shx cp -r ./src/lib ./dist/esm",
     "commit": "git-cz -S",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },

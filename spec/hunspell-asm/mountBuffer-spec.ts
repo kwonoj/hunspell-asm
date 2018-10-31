@@ -24,7 +24,7 @@ describe('mountBuffer', () => {
     (isMounted as jest.Mock<any>).mockReturnValueOnce(true);
     const fileName = 'vFile.bin';
 
-    const value = mountBufferFn(new Buffer(''), fileName);
+    const value = mountBufferFn(Buffer.from(''), fileName);
 
     expect(value).to.equal(`${memPathId}/${fileName}`);
   });
@@ -33,7 +33,7 @@ describe('mountBuffer', () => {
     (isMounted as jest.Mock<any>).mockReturnValueOnce(false);
 
     const fileName = 'vFile.bin';
-    const contents = new Buffer('dummy');
+    const contents = Buffer.from('dummy');
     const value = mountBufferFn(contents, fileName);
     const expectedMountPath = `${memPathId}/${fileName}`;
 
@@ -48,7 +48,7 @@ describe('mountBuffer', () => {
 
     nanoIdMock.mockReturnValueOnce(dummyId);
 
-    const value = mountBufferFn(new Buffer(''));
+    const value = mountBufferFn(Buffer.from(''));
 
     expect(value).to.equal(`${memPathId}/${dummyId}`);
     expect(nanoIdMock.mock.calls).to.have.lengthOf(1);

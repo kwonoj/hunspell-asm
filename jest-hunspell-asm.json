@@ -3,6 +3,11 @@
   "testMatch": [
     "**/spec/hunspell-asm/**/*-spec.ts"
   ],
+  "globals": {
+    "ts-jest": {
+      "diagnostics": false
+    }
+  },
   "bail": true,
   "testEnvironment": "node",
   "moduleFileExtensions": [

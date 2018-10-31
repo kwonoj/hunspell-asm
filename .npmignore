@@ -5,9 +5,7 @@ yarn.lock
 coverage
 typings/
 .vscode/
-src/
 test/
-!dist/src
 examples/
 .travis.yml
 appveyor.yml

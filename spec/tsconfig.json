@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "references": [
+    {
+      "path": "../src/tsconfig.types.json"
+    }
+  ],
+  "include": [
+    "./**/*ts",
+    "../src/ambient.d.ts"
+  ]
+}

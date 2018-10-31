@@ -1,6 +1,3 @@
-//tslint:disable-next-line:no-require-imports
-import fsType = require('fs');
-
 /** @internal */
 export type stringToUTF8Signature = (str: string, outPtr: number, maxBytesToWrite: number) => void;
 
@@ -19,7 +16,7 @@ export type FILESYSTEMS = {
 /** @internal */
 export type FS = {
   filesystems: FILESYSTEMS;
-  stat: (path: string) => fsType.Stats;
+  stat: (path: string) => import('fs').Stats;
   isDir: (mode: number) => boolean;
   isFile: (mode: number) => boolean;
   mkdir: (path: string, mode?: number) => void;
