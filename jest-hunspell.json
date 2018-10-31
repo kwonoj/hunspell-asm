@@ -3,6 +3,11 @@
   "testMatch": [
     "**/spec/hunspell/**/*-spec.ts"
   ],
+  "globals": {
+    "ts-jest": {
+      "diagnostics": false
+    }
+  },
   "bail": true,
   "testEnvironment": "node",
   "moduleFileExtensions": [
@@ -11,9 +16,6 @@
     "json",
     "ts",
     "tsx"
-  ],
-  "reporters": [
-    "jest-spin-reporter"
   ],
   "testPathIgnorePatterns": [
     "/.tmp/"

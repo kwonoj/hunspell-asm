@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "preserveConstEnums": true,
     "sourceMap": true,
-    "declaration": true,
     "suppressImplicitAnyIndexErrors": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
@@ -14,19 +12,11 @@
     "importHelpers": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "noEmit": true,
     "target": "es5",
     "outDir": "dist",
     "lib": [
-      "es2016",
-      "dom"
+      "es2016"
     ]
-  },
-  "include": [
-    "src/**/*",
-    "spec/**/*"
-  ],
-  "formatCodeOptions": {
-    "indentSize": 2,
-    "tabSize": 2
   }
 }
