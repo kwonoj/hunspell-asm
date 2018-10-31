@@ -50,7 +50,7 @@
     "@commitlint/cli": "^7.2.1",
     "@commitlint/config-angular": "^7.1.2",
     "@types/chai": "^4.1.7",
-    "@types/jest": "^23.3.8",
+    "@types/jest": "^23.3.9",
     "@types/lodash": "^4.14.117",
     "@types/node": "^10.12.1",
     "@types/shelljs": "^0.8.0",
@@ -61,7 +61,7 @@
     "husky": "^1.1.2",
     "jest": "^23.6.0",
     "jest-spin-reporter": "^1.0.2",
-    "lint-staged": "^8.0.3",
+    "lint-staged": "^8.0.4",
     "lodash": "^4.17.11",
     "npm-run-all": "^4.1.3",
     "prettier": "^1.14.3",
@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "emscripten-wasm-loader": "^1.1.0",
-    "nanoid": "^1.3.1",
+    "nanoid": "^1.3.3",
     "tslib": "^1.9.3",
     "unixify": "^1.0.0"
   },
