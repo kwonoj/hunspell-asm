@@ -1,6 +1,9 @@
 <a name="2.0.0-beta.1"></a>
 # [2.0.0-beta.1](https://github.com/kwonoj/hunspell-asm/compare/v1.1.2...v2.0.0-beta.1) (2018-11-01)
 
+BREAKING CHANGES:
+- ENVIRONMENT override deprecated
+- loadModule accepts `timeout` option as InitOptions object instead of single argument, like `loadModule({timeout: 3000});`
 
 ### Features
 
