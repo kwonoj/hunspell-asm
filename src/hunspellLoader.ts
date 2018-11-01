@@ -19,15 +19,7 @@ import { wrapHunspellInterface } from './wrapHunspellInterface';
 
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRONMENT): HunspellFactory => {
-  const {
-    cwrap,
-    FS,
-    _free,
-    allocateUTF8,
-    stackAlloc,
-    getValue,
-    Pointer_stringify
-  } = asmModule;
+  const { cwrap, FS, _free, allocateUTF8, stackAlloc, getValue, Pointer_stringify } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
@@ -41,6 +33,19 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
     log(`hunspellLoader: mount path for directory created at ${nodePathId}`);
   }
 
+  /**
+   * Naive auto-dispose interface to call hunspell interface with string params.
+   *
+   */
+  const usingParamPtr = <T = void>(...args: Array<string | ((...args: Array<number>) => T)>): T => {
+    const params = [...args];
+    const fn = params.pop()!;
+    const paramsPtr = params.map((param: string) => allocateUTF8(param));
+    const ret = (fn as Function)(...paramsPtr);
+    paramsPtr.forEach(paramPtr => _free(paramPtr));
+    return ret;
+  };
+
   return {
     mountDirectory: mountDirectory(FS, nodePathId, environment),
     mountBuffer: mountBuffer(FS, memPathId),
@@ -49,22 +54,19 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
       const affPathPtr = allocateUTF8(affPath);
       const dictPathPtr = allocateUTF8(dictPath);
       const hunspellPtr = hunspellInterface.create(affPathPtr, dictPathPtr);
+
       return {
         dispose: () => {
           hunspellInterface.destroy(hunspellPtr);
           _free(affPathPtr);
           _free(dictPathPtr);
         },
-        spell: (word: string) => {
-          const wordPtr = allocateUTF8(word);
-          const ret = hunspellInterface.spell(hunspellPtr, wordPtr);
-          _free(wordPtr);
-          return !!ret;
-        },
+        spell: (word: string) => !!usingParamPtr(word, wordPtr => hunspellInterface.spell(hunspellPtr, wordPtr)),
         suggest: (word: string) => {
           const suggestionListPtr = stackAlloc(4);
-          const wordPtr = allocateUTF8(word);
-          const suggestionCount = hunspellInterface.suggest(hunspellPtr, suggestionListPtr, wordPtr);
+          const suggestionCount = usingParamPtr(word, wordPtr =>
+            hunspellInterface.suggest(hunspellPtr, suggestionListPtr, wordPtr)
+          );
           const suggestionListValuePtr = getValue(suggestionListPtr, '*');
 
           const ret =
