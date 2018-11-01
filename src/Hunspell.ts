@@ -24,4 +24,31 @@ export interface Hunspell {
    * returns empty array.
    */
   suggest: (word: string) => Array<string>;
+
+  /**
+   * Load additional dictionaries into existing hunspell instance.
+   * This only loads dictionaries, cannot load affix.
+   *
+   * @param {string} dictPath In-memory file path to dic file. Path should use unix separator.
+   *
+   * @return {boolean} false if internal available slot for dict are full and can't add any more.
+   */
+  addDictionary: (dictPath: string) => boolean;
+
+  /**
+   * Add word to the run-time dictionary
+   */
+  addWord: (word: string) => void;
+
+  /**
+   * Add word to the run-time dictionary with affix flags of
+   * the example (a dictionary word): Hunspell will recognize
+   * affixed forms of the new word, too.
+   */
+  addWordWithAffix: (word: string, affix: string) => void;
+
+  /**
+   * Remove word from the run-time dictionary.
+   */
+  removeWord: (word: string) => void;
 }
