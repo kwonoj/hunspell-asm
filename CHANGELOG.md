@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.1"></a>
+# [2.0.0-beta.1](https://github.com/kwonoj/hunspell-asm/compare/v1.1.2...v2.0.0-beta.1) (2018-11-01)
+
+
+### Features
+
+* **hunspell:** support separate binary, expose locatebinary ([978e1a8](https://github.com/kwonoj/hunspell-asm/commit/978e1a8))
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/kwonoj/hunspell-asm/compare/v1.0.2...v1.1.2) (2018-10-19)
 
