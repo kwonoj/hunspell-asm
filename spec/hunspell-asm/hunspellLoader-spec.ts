@@ -111,7 +111,8 @@ describe('HunspellFactory', () => {
         mkdir: jest.fn()
       },
       getValue: jest.fn(),
-      stringToUTF8: jest.fn(),
+      _free: jest.fn(),
+      allocateUTF8: jest.fn(),
       Pointer_stringify: jest.fn()
     } as any;
 
@@ -154,15 +155,7 @@ describe('HunspellFactory', () => {
       expect(hunspell.spell('correct')).to.be.true;
       expect(mockHunspellInterface.spell.mock.calls).to.have.lengthOf(1);
 
-      expect((asmModule.stringToUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal([
-        'correct',
-        1111,
-        (`correct`.length << 2) + 1
-      ]);
-
-      //should preserve stack after allocating string internally
-      expect((asmModule.stackSave as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-      expect((asmModule.stackRestore as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
+      expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal(['correct']);
     });
 
     it('should return true if spell is incorrect', () => {
@@ -172,15 +165,7 @@ describe('HunspellFactory', () => {
       expect(hunspell.spell('incorrect')).to.be.false;
       expect(mockHunspellInterface.spell.mock.calls).to.have.lengthOf(1);
 
-      expect((asmModule.stringToUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal([
-        'incorrect',
-        1111,
-        (`incorrect`.length << 2) + 1
-      ]);
-
-      //should preserve stack after allocating string internally
-      expect((asmModule.stackSave as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-      expect((asmModule.stackRestore as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
+      expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal(['incorrect']);
     });
 
     it('should suggest word for misspelled', () => {
@@ -196,10 +181,6 @@ describe('HunspellFactory', () => {
       expect(suggested).to.deep.equal(suggestion);
 
       expect(mockHunspellInterface.free_list.mock.calls).to.have.lengthOf(1);
-
-      //should preserve stack after allocating string internally
-      expect((asmModule.stackSave as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-      expect((asmModule.stackRestore as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
     });
 
     it('should return empty array if suggestion list is empty', () => {
@@ -210,10 +191,6 @@ describe('HunspellFactory', () => {
 
       //empty suggestion still have allocated ptr, need to be freed
       expect(mockHunspellInterface.free_list.mock.calls).to.have.lengthOf(1);
-
-      //should preserve stack after allocating string internally
-      expect((asmModule.stackSave as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-      expect((asmModule.stackRestore as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
     });
   });
 });

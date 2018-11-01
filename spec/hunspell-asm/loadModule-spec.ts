@@ -21,7 +21,6 @@ const nodehunspellMock = require('../../src/lib/hunspell_node'); //tslint:disabl
 const getModuleMock = () => ({
   cwrap: jest.fn(),
   FS: { mkdir: jest.fn() },
-  stringToUTF8: jest.fn(),
   Runtime: jest.fn(),
   getValue: jest.fn(),
   Pointer_stringify: jest.fn()

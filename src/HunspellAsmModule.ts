@@ -1,7 +1,4 @@
 /** @internal */
-export type stringToUTF8Signature = (str: string, outPtr: number, maxBytesToWrite: number) => void;
-
-/** @internal */
 export type cwrapSignature = <T = Function>(fn: string, returnType: string | null, parameterType: Array<string>) => T;
 
 /** @internal */
@@ -35,10 +32,9 @@ export type FS = {
 export interface HunspellAsmModule {
   cwrap: cwrapSignature;
   FS: FS;
-  stringToUTF8: stringToUTF8Signature;
+  _free: (ptr: number) => void;
+  allocateUTF8: (str: string) => number;
   stackAlloc: (length: number) => number;
-  stackSave: () => number;
-  stackRestore: (stack: number) => void;
   getValue: <T = any>(ptr: number, type: string, nosafe?: boolean) => T;
   Pointer_stringify: (ptr: number) => string;
   initializeRuntime(): Promise<boolean>;
