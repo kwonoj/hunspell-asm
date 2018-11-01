@@ -15,4 +15,7 @@ tsconfg.json
 tslint.json
 wallaby.js
 dist/src/lib/README.md
-commitlint.config
+commitlint.config.js
+tsconfig.json
+bootstrap.ts
+*.tgz

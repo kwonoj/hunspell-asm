@@ -79,14 +79,10 @@ describe('HunspellFactory', () => {
     destroy: jest.Mock<any>;
   };
 
-  beforeAll(() => {
-    jest.resetAllMocks();
-
+  beforeEach(() => {
     let mockIdCount = 0;
     (nanoid as jest.Mock<any>).mockImplementation(() => `${++mockIdCount}`);
-  });
 
-  beforeEach(() => {
     mountDirMock = jest.fn();
     (mountDirectory as jest.Mock<any>).mockImplementationOnce(() => mountDirMock);
 

@@ -9,7 +9,8 @@ node_modules/
 typings/
 
 # Wasm binary
-src/lib/hunspell.js
+src/lib/*.js
+src/lib/*.wasm
 
 # Generated
 dist/
@@ -23,3 +24,4 @@ rules/
 # Misc
 npm-debug.log
 .DS_STORE
+*.tgz
