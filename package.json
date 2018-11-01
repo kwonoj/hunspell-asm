@@ -65,7 +65,7 @@
     "@types/shelljs": "^0.8.0",
     "chai": "^4.2.0",
     "commitizen": "^3.0.4",
-    "conventional-changelog": "^2.0.3",
+    "conventional-changelog": "^3.0.1",
     "conventional-changelog-cli": "^2.0.5",
     "husky": "^1.1.2",
     "jest": "^23.6.0",
