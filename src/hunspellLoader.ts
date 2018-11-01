@@ -78,9 +78,18 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
 
           hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
 
-          _free(wordPtr);
           return ret;
-        }
+        },
+        addDictionary: (dictPath: string) =>
+          usingParamPtr(dictPath, dictPathPtr => hunspellInterface.add_dic(hunspellPtr, dictPathPtr)) === 1
+            ? false
+            : true,
+        addWord: (word: string) => usingParamPtr(word, wordPtr => hunspellInterface.add(hunspellPtr, wordPtr)),
+        addWordWithAffix: (word: string, affix: string) =>
+          usingParamPtr(word, affix, (wordPtr, affixPtr) =>
+            hunspellInterface.add_with_affix(hunspellPtr, wordPtr, affixPtr)
+          ),
+        removeWord: (word: string) => usingParamPtr(word, wordPtr => hunspellInterface.remove(hunspellPtr, wordPtr))
       };
     }
   };
