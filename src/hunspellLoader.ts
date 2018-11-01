@@ -19,7 +19,15 @@ import { wrapHunspellInterface } from './wrapHunspellInterface';
 
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRONMENT): HunspellFactory => {
-  const { cwrap, FS, stringToUTF8, stackAlloc, stackSave, stackRestore, getValue, Pointer_stringify } = asmModule;
+  const {
+    cwrap,
+    FS,
+    _free,
+    allocateUTF8,
+    stackAlloc,
+    getValue,
+    Pointer_stringify
+  } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
@@ -33,32 +41,30 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
     log(`hunspellLoader: mount path for directory created at ${nodePathId}`);
   }
 
-  const allocString = (value: string) => {
-    const len = (value.length << 2) + 1;
-    const ret = stackAlloc(len);
-    stringToUTF8(value, ret, len);
-    return ret;
-  };
-
   return {
     mountDirectory: mountDirectory(FS, nodePathId, environment),
     mountBuffer: mountBuffer(FS, memPathId),
     unmount: unmount(FS, memPathId),
     create: (affPath: string, dictPath: string) => {
-      const hunspellPtr = hunspellInterface.create(allocString(affPath), allocString(dictPath));
+      const affPathPtr = allocateUTF8(affPath);
+      const dictPathPtr = allocateUTF8(dictPath);
+      const hunspellPtr = hunspellInterface.create(affPathPtr, dictPathPtr);
       return {
-        dispose: () => hunspellInterface.destroy(hunspellPtr),
+        dispose: () => {
+          hunspellInterface.destroy(hunspellPtr);
+          _free(affPathPtr);
+          _free(dictPathPtr);
+        },
         spell: (word: string) => {
-          //let allocated string volatile via manually save / restore stacks, instead of malloc / free
-          const stack = stackSave();
-          const ret = hunspellInterface.spell(hunspellPtr, allocString(word));
-          stackRestore(stack);
+          const wordPtr = allocateUTF8(word);
+          const ret = hunspellInterface.spell(hunspellPtr, wordPtr);
+          _free(wordPtr);
           return !!ret;
         },
         suggest: (word: string) => {
-          const stack = stackSave();
           const suggestionListPtr = stackAlloc(4);
-          const suggestionCount = hunspellInterface.suggest(hunspellPtr, suggestionListPtr, allocString(word));
+          const wordPtr = allocateUTF8(word);
+          const suggestionCount = hunspellInterface.suggest(hunspellPtr, suggestionListPtr, wordPtr);
           const suggestionListValuePtr = getValue(suggestionListPtr, '*');
 
           const ret =
@@ -69,8 +75,8 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
               : [];
 
           hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
-          stackRestore(stack);
 
+          _free(wordPtr);
           return ret;
         }
       };
