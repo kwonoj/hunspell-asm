@@ -44,6 +44,21 @@ export interface Hunspell {
    * Add word to the run-time dictionary with affix flags of
    * the example (a dictionary word): Hunspell will recognize
    * affixed forms of the new word, too.
+   *
+   * Note: `affix` flag example word is a word already exists in dictionary with its affix rule,
+   * so newly supplied word will follow same affix rules.
+   *
+   * i.e in current dict, suppose word `uncreate` have rules like
+   * - dic: `uncreate/V`
+   * - aff:
+   *     SFX V   e     ive        e
+   *     SFX V   0     ive        [^e]
+   *
+   * now applying new word
+   * addWordWithAffix('tttre', 'uncreate');
+   *
+   * new word `tttre` follows same affix rule, so
+   * spell(`tttrive`) === true
    */
   addWordWithAffix: (word: string, affix: string) => void;
 
