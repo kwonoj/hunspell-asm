@@ -14,9 +14,11 @@ const readFile = bindNodeCallback(fs.readFile);
 
 const mountDirHunspell = (factory: HunspellFactory, dirPath: string, fixture: string) => {
   const dir = factory.mountDirectory(dirPath);
-  const hunspell = factory.create(unixify(path.join(dir, `${fixture}.aff`)), unixify(path.join(dir, `${fixture}.dic`)));
+  const read = (fileName: string) => unixify(path.join(dir, fileName));
+  const hunspell = factory.create(read(`${fixture}.aff`), read(`${fixture}.dic`));
 
   return {
+    read,
     hunspell,
     dispose: () => {
       hunspell.dispose();
@@ -26,16 +28,23 @@ const mountDirHunspell = (factory: HunspellFactory, dirPath: string, fixture: st
 };
 
 const mountBufferHunspell = async (factory: HunspellFactory, dirPath: string, fixture: string) => {
-  const aff = factory.mountBuffer(await readFile(path.join(`${dirPath}`, `${fixture}.aff`)).toPromise());
-  const dic = factory.mountBuffer(await readFile(path.join(`${dirPath}`, `${fixture}.dic`)).toPromise());
+  const buffers: Array<string> = [];
+  const read = async (filePath: string) => {
+    const mountedPath = factory.mountBuffer(await readFile(filePath).toPromise());
+    buffers.push(mountedPath);
+    return mountedPath;
+  };
+
+  const aff = await read(path.join(`${dirPath}`, `${fixture}.aff`));
+  const dic = await read(path.join(`${dirPath}`, `${fixture}.dic`));
   const hunspell = factory.create(aff, dic);
 
   return {
+    read,
     hunspell,
     dispose: () => {
       hunspell.dispose();
-      factory.unmount(aff);
-      factory.unmount(dic);
+      buffers.forEach(x => factory.unmount(x));
     }
   };
 };
@@ -176,5 +185,72 @@ describe('hunspell', async () => {
         dispose();
       });
     });
+  });
+
+  describe('add words or dictionary in runtime', () => {
+    const getHunspell = (buffer: boolean) =>
+      (buffer ? mountBufferHunspell : mountDirHunspell)(hunspellFactory, baseFixturePath, 'base');
+
+    it.each([true, false])(
+      'should able to add new dictionary into existing dictionary (useBufferMount: %s)',
+      async (useBuffer: boolean) => {
+        const { hunspell, dispose, read } = await getHunspell(useBuffer);
+
+        expect(hunspell.spell('foo')).to.be.false;
+
+        if (useBuffer) {
+          hunspell.addDictionary(await read(path.join(baseFixturePath, 'break.dic')));
+        } else {
+          hunspell.addDictionary(read('break.dic'));
+        }
+
+        expect(hunspell.spell('foo')).to.be.true;
+        dispose();
+      }
+    );
+
+    it.each([true, false])(
+      'should able to add new word into existing dictionary (useBufferMount: %s)',
+      async (useBuffer: boolean) => {
+        const { hunspell, dispose } = await getHunspell(useBuffer);
+
+        expect(hunspell.spell('nonexistword')).to.be.false;
+
+        hunspell.addWord('nonexistword');
+        expect(hunspell.spell('nonexistword')).to.be.true;
+
+        dispose();
+      }
+    );
+
+    it.each([true, false])(
+      'should able to add new word with affix into existing dictionary (useBufferMount: %s)',
+      async (useBuffer: boolean) => {
+        const { hunspell, dispose } = await getHunspell(useBuffer);
+
+        expect(hunspell.spell('tre')).to.be.false;
+
+        hunspell.addWordWithAffix('tre', 'uncreate');
+
+        expect(hunspell.spell('tre')).to.be.true;
+        expect(hunspell.spell('trive')).to.be.true;
+
+        dispose();
+      }
+    );
+
+    it.each([true, false])(
+      'should able to remove word from existing dictionary (useBufferMount: %s)',
+      async (useBuffer: boolean) => {
+        const { hunspell, dispose } = await getHunspell(useBuffer);
+
+        expect(hunspell.spell('seven')).to.be.true;
+
+        hunspell.removeWord('seven');
+        expect(hunspell.spell('seven')).to.be.false;
+
+        dispose();
+      }
+    );
   });
 });
