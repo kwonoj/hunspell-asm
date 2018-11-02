@@ -68,15 +68,19 @@ describe('hunspellLoader', () => {
 describe('HunspellFactory', () => {
   let hunspellFactory: HunspellFactory;
   let asmModule: HunspellAsmModule;
-  let mountDirMock: jest.Mock<any>;
-  let mountBufferMock: jest.Mock<any>;
-  let unmountMock: jest.Mock<any>;
+  let mountDirMock: jest.Mock;
+  let mountBufferMock: jest.Mock;
+  let unmountMock: jest.Mock;
   let mockHunspellInterface: {
-    create: jest.Mock<any>;
-    spell: jest.Mock<any>;
-    suggest: jest.Mock<any>;
-    free_list: jest.Mock<any>;
-    destroy: jest.Mock<any>;
+    create: jest.Mock;
+    spell: jest.Mock;
+    suggest: jest.Mock;
+    free_list: jest.Mock;
+    destroy: jest.Mock;
+    add_dic: jest.Mock;
+    add: jest.Mock;
+    add_with_affix: jest.Mock;
+    remove: jest.Mock;
   };
 
   beforeEach(() => {
@@ -97,7 +101,11 @@ describe('HunspellFactory', () => {
       spell: jest.fn(),
       suggest: jest.fn(),
       free_list: jest.fn(),
-      destroy: jest.fn()
+      destroy: jest.fn(),
+      add_dic: jest.fn(),
+      add: jest.fn(),
+      add_with_affix: jest.fn(),
+      remove: jest.fn()
     };
 
     (wrapHunspellInterface as jest.Mock<any>).mockImplementationOnce(() => mockHunspellInterface);
@@ -146,6 +154,29 @@ describe('HunspellFactory', () => {
       hunspell.dispose();
 
       expect(mockHunspellInterface.destroy.mock.calls).to.have.lengthOf(1);
+      expect((asmModule._free as jest.Mock).mock.calls).to.have.lengthOf(2);
+    });
+
+    it('should free pointer correctly', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      mockHunspellInterface.spell.mockReturnValueOnce(1);
+
+      //each time param's passed, expect to call _free
+      [1, 2, 3].forEach(x => {
+        hunspell.spell(x.toString());
+        expect((asmModule._free as jest.Mock).mock.calls).to.have.lengthOf(x);
+      });
+    });
+
+    it('should free multiple param pointer correctly', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      mockHunspellInterface.spell.mockReturnValueOnce(1);
+
+      //each time param's passed, expect to call _free
+      [1, 2, 3].forEach(x => {
+        hunspell.addWordWithAffix(x.toString(), x.toString());
+        expect((asmModule._free as jest.Mock).mock.calls).to.have.lengthOf(x * 2);
+      });
     });
 
     it('should return true if spell is correct', () => {
@@ -158,7 +189,7 @@ describe('HunspellFactory', () => {
       expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal(['correct']);
     });
 
-    it('should return true if spell is incorrect', () => {
+    it('should return false if spell is incorrect', () => {
       const hunspell = hunspellFactory.create('aff', 'dic');
       mockHunspellInterface.spell.mockReturnValueOnce(0);
 
@@ -191,6 +222,51 @@ describe('HunspellFactory', () => {
 
       //empty suggestion still have allocated ptr, need to be freed
       expect(mockHunspellInterface.free_list.mock.calls).to.have.lengthOf(1);
+    });
+
+    it('should return true when able to add additional dictionary', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      mockHunspellInterface.add_dic.mockReturnValueOnce(0);
+      const ret = hunspell.addDictionary('dic');
+
+      expect(ret).to.be.true;
+      expect(mockHunspellInterface.add_dic.mock.calls).to.have.lengthOf(1);
+    });
+
+    it('should return false when not able to add additional dictionary', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      mockHunspellInterface.add_dic.mockReturnValueOnce(1);
+      const ret = hunspell.addDictionary('dic');
+
+      expect(ret).to.be.false;
+      expect(mockHunspellInterface.add_dic.mock.calls).to.have.lengthOf(1);
+    });
+
+    it('should able to add word', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      (asmModule.allocateUTF8 as jest.Mock).mockReturnValueOnce(111);
+      hunspell.addWord('wordother');
+
+      expect(mockHunspellInterface.add.mock.calls).to.have.lengthOf(1);
+      expect(mockHunspellInterface.add.mock.calls[0][1]).to.equal(111);
+    });
+
+    it('should able to add word with affix', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      (asmModule.allocateUTF8 as jest.Mock).mockImplementation((x: string) => (x.startsWith('word') ? 111 : 222));
+      hunspell.addWordWithAffix('wordother', 'affixother');
+
+      expect(mockHunspellInterface.add_with_affix.mock.calls).to.have.lengthOf(1);
+      expect(mockHunspellInterface.add_with_affix.mock.calls[0].slice(1)).to.deep.equal([111, 222]);
+    });
+
+    it('should able to remove word', () => {
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      (asmModule.allocateUTF8 as jest.Mock).mockReturnValueOnce(111);
+      hunspell.removeWord('wordother');
+
+      expect(mockHunspellInterface.remove.mock.calls).to.have.lengthOf(1);
+      expect(mockHunspellInterface.remove.mock.calls[0][1]).to.equal(111);
     });
   });
 });

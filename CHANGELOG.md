@@ -1,3 +1,20 @@
+<a name="2.0.0-beta.2"></a>
+# [2.0.0-beta.2](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2018-11-02)
+
+
+### Bug Fixes
+
+* **allocstring:** use emscripten method, explicitly free ([09a1a56](https://github.com/kwonoj/hunspell-asm/commit/09a1a56))
+
+
+### Features
+
+* **hunspell:** update interfaces ([c937dec](https://github.com/kwonoj/hunspell-asm/commit/c937dec))
+* **hunspellloader:** implement addword interfaces ([9a56a35](https://github.com/kwonoj/hunspell-asm/commit/9a56a35))
+* **wraphunspellinterface:** expose add interfaces ([73e5d1c](https://github.com/kwonoj/hunspell-asm/commit/73e5d1c))
+
+
+
 <a name="2.0.0-beta.1"></a>
 # [2.0.0-beta.1](https://github.com/kwonoj/hunspell-asm/compare/v1.1.2...v2.0.0-beta.1) (2018-11-01)
 
