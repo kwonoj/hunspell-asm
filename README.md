@@ -62,6 +62,16 @@ create(affPath: string, dictPath: string): Hunspell
 
 There are simple [examples](https://github.com/kwonoj/hunspell-asm/tree/e0e421fda667fb0d4888a4e0b21877e95540c29c/examples) for each environments using different apis. In each example directory do `npm install && npm start`.
 
+## Adding words to dictionary in runtime
+
+Hunspell exposes few interfaces allow to add words, or dictionaries in existing dictionary in runtime. This is **runtime** behavior, so it doesn't persist over once instance is disposed.
+
+- `addWord(word: string): void` : add single word to current dictionary.
+- `removeWord(word: string): void` : remove single word from current dictionary.
+- `addWordWithAffix(word: string, affix: string): void`: add word with example word having affix flag to be applied. Second param `affix` is example word, should exists in current dictionary with its own affix flag. Newly added word will have same affix rule as example word.
+- `addDictionary(dictPath): boolean` : Load addtional dictionary into existing hunspell instance. This cannot load additional affi
+x. If function returns false, it means internal slot hunspell manages are full and can't add additional dictionaries.
+
 ## Things to note
 
 - Ensure all inputs (aff, dic, word for spell / suggest) are UTF-8 encoded correctly. While hunspell itself supports other encodings, all surrounding interfaces passing buffers are plain javascript doesn't detect / converts encodings automatically.
