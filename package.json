@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "emscripten-wasm-loader": "^2.2.2",
-    "nanoid": "^1.3.3",
+    "nanoid": "^2.0.0",
     "tslib": "^1.9.3",
     "unixify": "^1.0.0"
   },
