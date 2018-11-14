@@ -40,19 +40,6 @@ enum BinaryType {
 }
 
 /**
- * Actually download binary from remote. This is direct invocation to wget, need local wget installation.
- *
- */
-const downloadSingleBinary = async (libPath: string, binaryFile: { url: string; localBinaryPath: string }) => {
-  const { url } = binaryFile;
-  await asyncExec(`wget -q --directory-prefix=${libPath} ${url}`);
-
-  if (!validateBinaries([binaryFile])) {
-    throw new Error(`Downloaded binary checksum mismatch, cannot complete bootstrap`);
-  }
-};
-
-/**
  * Compare checksum of given file between remote.
  */
 const validateBinaries = async (binaryFiles: Array<{ url: string; localBinaryPath: string }>) => {
@@ -75,33 +62,54 @@ const validateBinaries = async (binaryFiles: Array<{ url: string; localBinaryPat
 };
 
 /**
+ * Actually download binary from remote. This is direct invocation to wget, need local wget installation.
+ *
+ */
+const downloadSingleBinary = async (libPath: string, binaryFile: { url: string; localBinaryPath: string }) => {
+  const { url } = binaryFile;
+  await asyncExec(`wget -q --directory-prefix=${libPath} ${url}`);
+
+  if (!validateBinaries([binaryFile])) {
+    throw new Error(`Downloaded binary checksum mismatch, cannot complete bootstrap`);
+  }
+};
+
+/**
  * Main script execution
  */
 (async () => {
-  const libPath = path.resolve('./src/lib');
-  const binaryFiles = Object.keys(BinaryType)
-    .map(x => BinaryType[x] as string)
-    // Per each environment, there are preamble script (js) and actual wasm binary
-    .reduce(
-      (acc: Array<string>, binaryType: string) => [...acc, `hunspell_${binaryType}.js`, `hunspell_${binaryType}.wasm`],
-      []
-    )
-    .map(fileName => ({
-      url: `https://github.com/kwonoj/docker-hunspell-wasm/releases/download/${version}/${fileName}`,
-      localBinaryPath: path.join(libPath, fileName),
-      type: path.extname(fileName) === '.js' ? 'hex' : ('binary' as crypto.HexBase64Latin1Encoding)
-    }));
+  try {
+    const libPath = path.resolve('./src/lib');
+    const binaryFiles = Object.keys(BinaryType)
+      .map(x => BinaryType[x] as string)
+      // Per each environment, there are preamble script (js) and actual wasm binary
+      .reduce(
+        (acc: Array<string>, binaryType: string) => [
+          ...acc,
+          `hunspell_${binaryType}.js`,
+          `hunspell_${binaryType}.wasm`
+        ],
+        []
+      )
+      .map(fileName => ({
+        url: `https://github.com/kwonoj/docker-hunspell-wasm/releases/download/${version}/${fileName}`,
+        localBinaryPath: path.join(libPath, fileName),
+        type: path.extname(fileName) === '.js' ? 'hex' : ('binary' as crypto.HexBase64Latin1Encoding)
+      }));
 
-  const isBinaryValid = await validateBinaries(binaryFiles);
+    const isBinaryValid = await validateBinaries(binaryFiles);
 
-  if (!isBinaryValid) {
-    rm('-rf', libPath);
-    mkdir(libPath);
+    if (!isBinaryValid) {
+      rm('-rf', libPath);
+      mkdir(libPath);
 
-    console.log(`Downloading hunspell wasm binary version '${version}'`);
+      console.log(`Downloading hunspell wasm binary version '${version}'`);
 
-    for (const singleFile of binaryFiles) {
-      await downloadSingleBinary(libPath, singleFile);
+      for (const singleFile of binaryFiles) {
+        await downloadSingleBinary(libPath, singleFile);
+      }
     }
+  } catch (e) {
+    console.log(e);
   }
 })();
