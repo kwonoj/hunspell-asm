@@ -3,9 +3,11 @@ import { createModuleLoader } from './createModuleLoader';
 import { log } from './util/logger';
 
 /**
- * Load, initialize wasm binary to use actual cld wasm instances.
+ * Same interface to loadModule, but for asm.js fallback binary.
+ * Explicitly separated instead of runtime flag support in loadModule to allow tree shaking
+ * when bundle code, avoids unnecessary binaries increases bundle size.
  *
- * @param [InitOptions] Options to initialize cld3 wasm binary.
+ * @param [InitOptions] Options to initialize cld3 asm binary.
  * @param {number} [InitOptions.timeout] - timeout to wait wasm binary compilation & load.
  * @param {string | object} [InitOptions.locateBinary] - custom resolution logic for wasm binary.
  * @param {ENVIRONMENT} [InitOptions.environment] For overriding running environment
@@ -13,20 +15,20 @@ import { log } from './util/logger';
  *
  * @returns {() => Promise<CldFactory>} Function to load module
  */
-const loadModule = async (
+const loadAsmModule = async (
   initOptions: Partial<{
     timeout: number;
     locateBinary: (filePath: string) => string | object;
     environment?: ENVIRONMENT;
   }> = {}
 ) => {
-  log(`loadModule: loading hunspell wasm binary`);
+  log(`loadModule: loading hunspell asm.js binary`);
 
   //imports MODULARIZED emscripten preamble
   //tslint:disable-next-line:no-require-imports no-var-requires
-  const runtime = require(`./lib/hunspell`);
+  const runtime = require(`./lib/hunspell-asm`);
 
   return createModuleLoader(initOptions, runtime);
 };
 
-export { loadModule };
+export { loadAsmModule };
