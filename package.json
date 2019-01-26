@@ -1,6 +1,6 @@
 {
   "name": "hunspell-asm",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.4",
   "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -9,7 +9,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "dab1b23-190125"
+    "hunspell-version": "19b43c8-190125"
   },
   "lint-staged": {
     "*.ts": [
