@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { isMounted } from '../../src/isMounted';
 import { unmount } from '../../src/unmount';
 
@@ -13,9 +12,9 @@ const getFsMock = () => ({
 describe('unmount', () => {
   let unmountFn: (mountedPath: string) => void;
   let fsMock: {
-    unlink: jest.Mock<any>,
-    unmount: jest.Mock<any>,
-    rmdir: jest.Mock<any>
+    unlink: jest.Mock<any>;
+    unmount: jest.Mock<any>;
+    rmdir: jest.Mock<any>;
   };
 
   beforeEach(() => {
@@ -29,7 +28,7 @@ describe('unmount', () => {
     unmountFn('dummyValue');
     Object.keys(fsMock)
       .map(key => fsMock[key])
-      .forEach((mock: jest.Mock<any>) => expect(mock.mock.calls).to.have.lengthOf(0));
+      .forEach((mock: jest.Mock<any>) => expect(mock).not.toHaveBeenCalled());
   });
 
   it('should unmount physical path', () => {
@@ -43,11 +42,11 @@ describe('unmount', () => {
     const unmountMock = fsMock.unmount as jest.Mock<any>;
     const rmdirMock = fsMock.rmdir as jest.Mock<any>;
 
-    expect((fsMock.unlink as jest.Mock<any>).mock.calls).to.have.lengthOf(0);
-    expect(unmountMock.mock.calls).to.have.lengthOf(1);
-    expect(unmountMock.mock.calls[0]).to.deep.equal([mountPath]);
-    expect(rmdirMock.mock.calls).to.have.lengthOf(1);
-    expect(rmdirMock.mock.calls[0]).to.deep.equal([mountPath]);
+    expect(fsMock.unlink).not.toHaveBeenCalled();
+    expect(unmountMock).toHaveBeenCalledTimes(1);
+    expect(unmountMock.mock.calls[0]).toEqual([mountPath]);
+    expect(rmdirMock).toHaveBeenCalledTimes(1);
+    expect(rmdirMock.mock.calls[0]).toEqual([mountPath]);
 
     jest.resetAllMocks();
   });
@@ -61,11 +60,11 @@ describe('unmount', () => {
     unmountFn(mountPath);
 
     const unlinkMock = fsMock.unlink as jest.Mock<any>;
-    expect(unlinkMock.mock.calls).to.have.lengthOf(1);
-    expect(unlinkMock.mock.calls[0]).to.deep.equal([mountPath]);
+    expect(unlinkMock).toHaveBeenCalledTimes(1);
+    expect(unlinkMock.mock.calls[0]).toEqual([mountPath]);
 
-    expect((fsMock.unmount as jest.Mock<any>).mock.calls).to.have.lengthOf(0);
-    expect((fsMock.rmdir as jest.Mock<any>).mock.calls).to.have.lengthOf(0);
+    expect(fsMock.unmount).not.toHaveBeenCalled();
+    expect(fsMock.rmdir).not.toHaveBeenCalled();
 
     jest.resetAllMocks();
   });

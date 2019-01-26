@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { isMounted } from '../../src/isMounted';
 
 const getFsMock = () => ({
@@ -14,8 +13,8 @@ describe('isMounted', () => {
       throw new Error();
     });
 
-    expect(() => isMounted(fsMock as any, 'dummy', 'dir')).to.not.throw();
-    expect(isMounted(fsMock as any, 'dummy', 'dir')).to.be.false;
+    expect(() => isMounted(fsMock as any, 'dummy', 'dir')).not.toThrow();
+    expect(isMounted(fsMock as any, 'dummy', 'dir')).toBe(false);
   });
 
   it('should not log fail if stat throws ENOENT', () => {
@@ -26,8 +25,8 @@ describe('isMounted', () => {
       throw e;
     });
 
-    expect(() => isMounted(fsMock as any, 'dummy', 'dir')).to.not.throw();
-    expect(isMounted(fsMock as any, 'dummy', 'dir')).to.be.false;
+    expect(() => isMounted(fsMock as any, 'dummy', 'dir')).not.toThrow();
+    expect(isMounted(fsMock as any, 'dummy', 'dir')).toBe(false);
   });
 
   it('should check directory', () => {
@@ -35,8 +34,8 @@ describe('isMounted', () => {
     fsMock.stat.mockReturnValueOnce({});
     isMounted(fsMock as any, 'dummy', 'dir');
 
-    expect(fsMock.isDir.mock.calls).to.have.lengthOf(1);
-    expect(fsMock.isFile.mock.calls).to.have.lengthOf(0);
+    expect(fsMock.isDir).toHaveBeenCalledTimes(1);
+    expect(fsMock.isFile).not.toHaveBeenCalled();
   });
 
   it('should check file', () => {
@@ -44,8 +43,8 @@ describe('isMounted', () => {
     fsMock.stat.mockReturnValueOnce({});
     isMounted(fsMock as any, 'dummy', 'file');
 
-    expect(fsMock.isDir.mock.calls).to.have.lengthOf(0);
-    expect(fsMock.isFile.mock.calls).to.have.lengthOf(1);
+    expect(fsMock.isDir).not.toHaveBeenCalled();
+    expect(fsMock.isFile).toHaveBeenCalledTimes(1);
   });
 
   it('should return true when mounted with directory', () => {
@@ -53,7 +52,7 @@ describe('isMounted', () => {
     fsMock.stat.mockReturnValueOnce({});
     fsMock.isDir.mockReturnValueOnce(true);
 
-    expect(isMounted(fsMock as any, 'dummy', 'dir')).to.be.true;
+    expect(isMounted(fsMock as any, 'dummy', 'dir')).toBe(true);
   });
 
   it('should return true when mounted with file', () => {
@@ -61,7 +60,7 @@ describe('isMounted', () => {
     fsMock.stat.mockReturnValueOnce({});
     fsMock.isFile.mockReturnValueOnce(true);
 
-    expect(isMounted(fsMock as any, 'dummy', 'file')).to.be.true;
+    expect(isMounted(fsMock as any, 'dummy', 'file')).toBe(true);
   });
 
   it('should return false when mounted but not directory', () => {
@@ -69,7 +68,7 @@ describe('isMounted', () => {
     fsMock.stat.mockReturnValueOnce({});
     fsMock.isDir.mockReturnValueOnce(false);
 
-    expect(isMounted(fsMock as any, 'dummy', 'dir')).to.be.false;
+    expect(isMounted(fsMock as any, 'dummy', 'dir')).toBe(false);
   });
 
   it('should return false when mounted but not file', () => {
@@ -77,6 +76,6 @@ describe('isMounted', () => {
     fsMock.stat.mockReturnValueOnce({});
     fsMock.isFile.mockReturnValueOnce(false);
 
-    expect(isMounted(fsMock as any, 'dummy', 'file')).to.be.false;
+    expect(isMounted(fsMock as any, 'dummy', 'file')).toBe(false);
   });
 });

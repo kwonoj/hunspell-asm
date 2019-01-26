@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import * as nanoid from 'nanoid';
 import { isMounted } from '../../src/isMounted';
 import { mountBuffer } from '../../src/mountBuffer';
@@ -26,7 +25,7 @@ describe('mountBuffer', () => {
 
     const value = mountBufferFn(Buffer.from(''), fileName);
 
-    expect(value).to.equal(`${memPathId}/${fileName}`);
+    expect(value).toEqual(`${memPathId}/${fileName}`);
   });
 
   it('should write file in memory filesystem', () => {
@@ -37,9 +36,9 @@ describe('mountBuffer', () => {
     const value = mountBufferFn(contents, fileName);
     const expectedMountPath = `${memPathId}/${fileName}`;
 
-    expect(value).to.equal(expectedMountPath);
-    expect(fsMock.writeFile.mock.calls).to.have.lengthOf(1);
-    expect(fsMock.writeFile.mock.calls[0]).to.deep.equal([expectedMountPath, contents, { encoding: 'binary' }]);
+    expect(value).toEqual(expectedMountPath);
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile.mock.calls[0]).toEqual([expectedMountPath, contents, { encoding: 'binary' }]);
   });
 
   it('should generate file name if not provided', () => {
@@ -50,7 +49,7 @@ describe('mountBuffer', () => {
 
     const value = mountBufferFn(Buffer.from(''));
 
-    expect(value).to.equal(`${memPathId}/${dummyId}`);
-    expect(nanoIdMock.mock.calls).to.have.lengthOf(1);
+    expect(value).toEqual(`${memPathId}/${dummyId}`);
+    expect(nanoIdMock).toHaveBeenCalledTimes(1);
   });
 });

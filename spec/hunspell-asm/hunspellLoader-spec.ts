@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { ENVIRONMENT } from 'emscripten-wasm-loader';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from '../../src/HunspellAsmModule';
@@ -30,8 +29,8 @@ describe('hunspellLoader', () => {
     hunspellLoader(asmModule as any, ENVIRONMENT.NODE);
 
     const mkdirMock = asmModule.FS.mkdir.mock;
-    expect(mkdirMock.calls.length).to.gte(1);
-    expect(mkdirMock.calls[0][0]).to.equal(`/${dummyNanoid}`);
+    expect(mkdirMock.calls.length).toBeGreaterThan(1);
+    expect(mkdirMock.calls[0][0]).toEqual(`/${dummyNanoid}`);
   });
 
   it('should generate root path for mounting phsyical directory', () => {
@@ -41,8 +40,8 @@ describe('hunspellLoader', () => {
     hunspellLoader(asmModule as any, ENVIRONMENT.NODE);
 
     const mkdirMock = asmModule.FS.mkdir.mock;
-    expect(mkdirMock.calls).to.have.lengthOf(2);
-    expect(mkdirMock.calls).to.deep.equal([['/meh1'], ['/meh2']]);
+    expect(asmModule.FS.mkdir).toHaveBeenCalledTimes(2);
+    expect(mkdirMock.calls).toEqual([['/meh1'], ['/meh2']]);
   });
 
   it('should not generate root path for phsyical directory if envoironment is not node', () => {
@@ -52,16 +51,16 @@ describe('hunspellLoader', () => {
     hunspellLoader(asmModule as any, ENVIRONMENT.WEB);
 
     const mkdirMock = asmModule.FS.mkdir.mock;
-    expect(mkdirMock.calls).to.have.lengthOf(1);
-    expect(mkdirMock.calls).to.deep.equal([['/meh1']]);
+    expect(asmModule.FS.mkdir).toHaveBeenCalledTimes(1);
+    expect(mkdirMock.calls).toEqual([['/meh1']]);
   });
 
   it('should return HunspellFactory instance', () => {
     const asmModule = getAsmModule();
     const value = hunspellLoader(asmModule as any, ENVIRONMENT.NODE);
 
-    expect(value).to.be.a('object');
-    expect(Object.keys(value)).to.deep.equal(['mountDirectory', 'mountBuffer', 'unmount', 'create']);
+    expect(value).toBeDefined();
+    expect(Object.keys(value)).toEqual(['mountDirectory', 'mountBuffer', 'unmount', 'create']);
   });
 });
 
@@ -128,24 +127,24 @@ describe('HunspellFactory', () => {
   });
 
   it('should export mount functions', () => {
-    expect((mountBuffer as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-    expect((mountBuffer as jest.Mock<any>).mock.calls[0]).to.deep.equal([asmModule.FS, '/1']);
+    expect(mountBuffer as jest.Mock<any>).toHaveBeenCalledTimes(1);
+    expect((mountBuffer as jest.Mock<any>).mock.calls[0]).toEqual([asmModule.FS, '/1']);
 
-    expect((mountDirectory as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-    expect((mountDirectory as jest.Mock<any>).mock.calls[0]).to.deep.equal([asmModule.FS, '/2', ENVIRONMENT.NODE]);
+    expect(mountDirectory as jest.Mock<any>).toHaveBeenCalledTimes(1);
+    expect((mountDirectory as jest.Mock<any>).mock.calls[0]).toEqual([asmModule.FS, '/2', ENVIRONMENT.NODE]);
 
-    expect((unmount as jest.Mock<any>).mock.calls).to.have.lengthOf(1);
-    expect((unmount as jest.Mock<any>).mock.calls[0]).to.deep.equal([asmModule.FS, '/1']);
+    expect(unmount as jest.Mock<any>).toHaveBeenCalledTimes(1);
+    expect((unmount as jest.Mock<any>).mock.calls[0]).toEqual([asmModule.FS, '/1']);
 
-    expect(hunspellFactory.mountBuffer).to.equal(mountBufferMock);
-    expect(hunspellFactory.mountDirectory).to.equal(mountDirMock);
-    expect(hunspellFactory.unmount).to.equal(unmountMock);
+    expect(hunspellFactory.mountBuffer).toEqual(mountBufferMock);
+    expect(hunspellFactory.mountDirectory).toEqual(mountDirMock);
+    expect(hunspellFactory.unmount).toEqual(unmountMock);
   });
 
   it('should create hunspell instance', () => {
     hunspellFactory.create('aff', 'dic');
 
-    expect(mockHunspellInterface.create.mock.calls).to.have.lengthOf(1);
+    expect(mockHunspellInterface.create).toHaveBeenCalledTimes(1);
   });
 
   describe('Hunspell', () => {
@@ -153,8 +152,8 @@ describe('HunspellFactory', () => {
       const hunspell = hunspellFactory.create('aff', 'dic');
       hunspell.dispose();
 
-      expect(mockHunspellInterface.destroy.mock.calls).to.have.lengthOf(1);
-      expect((asmModule._free as jest.Mock).mock.calls).to.have.lengthOf(2);
+      expect(mockHunspellInterface.destroy).toHaveBeenCalledTimes(1);
+      expect(asmModule._free).toHaveBeenCalledTimes(2);
     });
 
     it('should free pointer correctly', () => {
@@ -164,7 +163,7 @@ describe('HunspellFactory', () => {
       //each time param's passed, expect to call _free
       [1, 2, 3].forEach(x => {
         hunspell.spell(x.toString());
-        expect((asmModule._free as jest.Mock).mock.calls).to.have.lengthOf(x);
+        expect(asmModule._free).toHaveBeenCalledTimes(x);
       });
     });
 
@@ -175,7 +174,7 @@ describe('HunspellFactory', () => {
       //each time param's passed, expect to call _free
       [1, 2, 3].forEach(x => {
         hunspell.addWordWithAffix(x.toString(), x.toString());
-        expect((asmModule._free as jest.Mock).mock.calls).to.have.lengthOf(x * 2);
+        expect(asmModule._free).toHaveBeenCalledTimes(x * 2);
       });
     });
 
@@ -183,20 +182,20 @@ describe('HunspellFactory', () => {
       const hunspell = hunspellFactory.create('aff', 'dic');
       mockHunspellInterface.spell.mockReturnValueOnce(1);
 
-      expect(hunspell.spell('correct')).to.be.true;
-      expect(mockHunspellInterface.spell.mock.calls).to.have.lengthOf(1);
+      expect(hunspell.spell('correct')).toBe(true);
+      expect(mockHunspellInterface.spell).toHaveBeenCalledTimes(1);
 
-      expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal(['correct']);
+      expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).toEqual(['correct']);
     });
 
     it('should return false if spell is incorrect', () => {
       const hunspell = hunspellFactory.create('aff', 'dic');
       mockHunspellInterface.spell.mockReturnValueOnce(0);
 
-      expect(hunspell.spell('incorrect')).to.be.false;
-      expect(mockHunspellInterface.spell.mock.calls).to.have.lengthOf(1);
+      expect(hunspell.spell('incorrect')).toBe(false);
+      expect(mockHunspellInterface.spell).toHaveBeenCalledTimes(1);
 
-      expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).to.deep.equal(['incorrect']);
+      expect((asmModule.allocateUTF8 as jest.Mock<any>).mock.calls[2]).toEqual(['incorrect']);
     });
 
     it('should suggest word for misspelled', () => {
@@ -208,20 +207,20 @@ describe('HunspellFactory', () => {
       mockHunspellInterface.suggest.mockReturnValueOnce(2);
 
       const suggested = hunspell.suggest('word');
-      expect(suggested).to.have.lengthOf(2);
-      expect(suggested).to.deep.equal(suggestion);
+      expect(suggested).toHaveLength(2);
+      expect(suggested).toEqual(suggestion);
 
-      expect(mockHunspellInterface.free_list.mock.calls).to.have.lengthOf(1);
+      expect(mockHunspellInterface.free_list).toHaveBeenCalledTimes(1);
     });
 
     it('should return empty array if suggestion list is empty', () => {
       const hunspell = hunspellFactory.create('aff', 'dic');
       mockHunspellInterface.suggest.mockReturnValueOnce(0);
 
-      expect(hunspell.suggest('empty')).to.be.empty;
+      expect(hunspell.suggest('empty')).toEqual([]);
 
       //empty suggestion still have allocated ptr, need to be freed
-      expect(mockHunspellInterface.free_list.mock.calls).to.have.lengthOf(1);
+      expect(mockHunspellInterface.free_list).toHaveBeenCalledTimes(1);
     });
 
     it('should return true when able to add additional dictionary', () => {
@@ -229,8 +228,8 @@ describe('HunspellFactory', () => {
       mockHunspellInterface.add_dic.mockReturnValueOnce(0);
       const ret = hunspell.addDictionary('dic');
 
-      expect(ret).to.be.true;
-      expect(mockHunspellInterface.add_dic.mock.calls).to.have.lengthOf(1);
+      expect(ret).toBe(true);
+      expect(mockHunspellInterface.add_dic).toHaveBeenCalledTimes(1);
     });
 
     it('should return false when not able to add additional dictionary', () => {
@@ -238,8 +237,8 @@ describe('HunspellFactory', () => {
       mockHunspellInterface.add_dic.mockReturnValueOnce(1);
       const ret = hunspell.addDictionary('dic');
 
-      expect(ret).to.be.false;
-      expect(mockHunspellInterface.add_dic.mock.calls).to.have.lengthOf(1);
+      expect(ret).toBe(false);
+      expect(mockHunspellInterface.add_dic).toHaveBeenCalledTimes(1);
     });
 
     it('should able to add word', () => {
@@ -247,8 +246,8 @@ describe('HunspellFactory', () => {
       (asmModule.allocateUTF8 as jest.Mock).mockReturnValueOnce(111);
       hunspell.addWord('wordother');
 
-      expect(mockHunspellInterface.add.mock.calls).to.have.lengthOf(1);
-      expect(mockHunspellInterface.add.mock.calls[0][1]).to.equal(111);
+      expect(mockHunspellInterface.add).toHaveBeenCalledTimes(1);
+      expect(mockHunspellInterface.add.mock.calls[0][1]).toEqual(111);
     });
 
     it('should able to add word with affix', () => {
@@ -256,8 +255,8 @@ describe('HunspellFactory', () => {
       (asmModule.allocateUTF8 as jest.Mock).mockImplementation((x: string) => (x.startsWith('word') ? 111 : 222));
       hunspell.addWordWithAffix('wordother', 'affixother');
 
-      expect(mockHunspellInterface.add_with_affix.mock.calls).to.have.lengthOf(1);
-      expect(mockHunspellInterface.add_with_affix.mock.calls[0].slice(1)).to.deep.equal([111, 222]);
+      expect(mockHunspellInterface.add_with_affix).toHaveBeenCalledTimes(1);
+      expect(mockHunspellInterface.add_with_affix.mock.calls[0].slice(1)).toEqual([111, 222]);
     });
 
     it('should able to remove word', () => {
@@ -265,8 +264,8 @@ describe('HunspellFactory', () => {
       (asmModule.allocateUTF8 as jest.Mock).mockReturnValueOnce(111);
       hunspell.removeWord('wordother');
 
-      expect(mockHunspellInterface.remove.mock.calls).to.have.lengthOf(1);
-      expect(mockHunspellInterface.remove.mock.calls[0][1]).to.equal(111);
+      expect(mockHunspellInterface.remove).toHaveBeenCalledTimes(1);
+      expect(mockHunspellInterface.remove.mock.calls[0][1]).toEqual(111);
     });
   });
 });
