@@ -1,4 +1,4 @@
-import { ENVIRONMENT } from 'emscripten-wasm-loader';
+import { ENVIRONMENT, isNode } from 'emscripten-wasm-loader';
 import { createModuleLoader } from './createModuleLoader';
 import { log } from './util/logger';
 
@@ -26,7 +26,26 @@ const loadModule = async (
   //tslint:disable-next-line:no-require-imports no-var-requires
   const runtime = require(`./lib/hunspell`);
 
-  return createModuleLoader(initOptions, runtime);
+  const { locateBinary, environment } = initOptions;
+  const env = environment ? environment : isNode() ? ENVIRONMENT.NODE : ENVIRONMENT.WEB;
+
+  //Override default wasm binary resolution in preamble if needed.
+  //By default, hunspell-asm overrides to direct require to binary on *browser* environment to allow bundler like webpack resolves it.
+  //On node, it relies on default resolution logic.
+  const lookupBinary =
+    env === ENVIRONMENT.NODE && !locateBinary
+      ? undefined
+      : locateBinary ||
+        //tslint:disable-next-line:no-require-imports no-var-requires
+        ((filePath: string) => (filePath.endsWith('.wasm') ? require('./lib/hunspell.wasm') : filePath));
+
+  return createModuleLoader(
+    {
+      locateBinary: lookupBinary,
+      ...initOptions
+    },
+    runtime
+  );
 };
 
 export { loadModule };
