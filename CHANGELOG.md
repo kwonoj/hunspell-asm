@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.5"></a>
+# [2.0.0-beta.5](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2019-01-26)
+
+
+### Bug Fixes
+
+* **createmoduleloader:** fix non treeshakable import ([a77a149](https://github.com/kwonoj/hunspell-asm/commit/a77a149))
+
+
+
 <a name="2.0.0-beta.4"></a>
 # [2.0.0-beta.4](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2019-01-26)
 
