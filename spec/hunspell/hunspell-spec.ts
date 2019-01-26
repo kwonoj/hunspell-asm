@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import * as fs from 'fs';
 import { includes } from 'lodash';
 import * as path from 'path';
@@ -95,11 +94,13 @@ describe('hunspell', async () => {
         .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
         .toPromise();
 
-      words.filter(word => !includes(excludedWords, word)).forEach(word => {
-        const base = { word };
-        const value = assertionValue(hunspell, word);
-        expect({ ...base, value }).to.deep.equal({ ...base, value: expected });
-      });
+      words
+        .filter(word => !includes(excludedWords, word))
+        .forEach(word => {
+          const base = { word };
+          const value = assertionValue(hunspell, word);
+          expect({ ...base, value }).toEqual({ ...base, value: expected });
+        });
     };
 
     it(`${path.basename(fixture)} when mount directory`, async () => {
@@ -133,58 +134,62 @@ describe('hunspell', async () => {
 
   describe('should suggest missplled word', () => {
     const fixtureList = getFixtureList(baseFixturePath, '.sug');
-    fixtureList.filter(x => !includes(['1463589', 'i54633', 'map'], x)).forEach(fixture => {
-      const base = path.join(baseFixturePath, `${fixture}`);
-      const suggestions = (
-        [
-          ...fs
-            .readFileSync(`${base}.sug`, 'utf-8')
-            .split('\n')
-            .filter(x => !!x)
-            .map(x => {
-              const splitted = x.split(', ');
-              if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
-                return splitted[0];
-              }
-              const filtered = splitted.filter(word => !includes(excludedWords, word));
-              if (filtered.length > 0) {
-                return filtered;
-              }
-              return null;
-            })
-        ] || []
-      ).filter(x => !!x);
+    fixtureList
+      .filter(x => !includes(['1463589', 'i54633', 'map'], x))
+      .forEach(fixture => {
+        const base = path.join(baseFixturePath, `${fixture}`);
+        const suggestions = (
+          [
+            ...fs
+              .readFileSync(`${base}.sug`, 'utf-8')
+              .split('\n')
+              .filter(x => !!x)
+              .map(x => {
+                const splitted = x.split(', ');
+                if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
+                  return splitted[0];
+                }
+                const filtered = splitted.filter(word => !includes(excludedWords, word));
+                if (filtered.length > 0) {
+                  return filtered;
+                }
+                return null;
+              })
+          ] || []
+        ).filter(x => !!x);
 
-      const runAssert = async (hunspell: Hunspell) => {
-        const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
-          .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
-          .toPromise();
+        const runAssert = async (hunspell: Hunspell) => {
+          const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
+            .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
+            .toPromise();
 
-        const suggested: Array<string | Array<string>> = [];
-        //run suggestion, construct results into Array<string|Array<string>>
-        words.filter(word => !includes(excludedWords, word)).forEach(word => {
-          const ret = hunspell.suggest(word);
-          if (ret.length > 0) {
-            suggested.push(ret.length > 1 ? ret : ret[0]);
-          }
+          const suggested: Array<string | Array<string>> = [];
+          //run suggestion, construct results into Array<string|Array<string>>
+          words
+            .filter(word => !includes(excludedWords, word))
+            .forEach(word => {
+              const ret = hunspell.suggest(word);
+              if (ret.length > 0) {
+                suggested.push(ret.length > 1 ? ret : ret[0]);
+              }
+            });
+
+          //fixture should equal to actual suggestion
+          expect(suggested).toEqual(suggestions);
+        };
+
+        it(`${path.basename(fixture)} when mount directory`, async () => {
+          const { hunspell, dispose } = mountDirHunspell(hunspellFactory, baseFixturePath, fixture);
+          await runAssert(hunspell);
+          dispose();
         });
 
-        //fixture should equal to actual suggestion
-        expect(suggested).to.deep.equal(suggestions);
-      };
-
-      it(`${path.basename(fixture)} when mount directory`, async () => {
-        const { hunspell, dispose } = mountDirHunspell(hunspellFactory, baseFixturePath, fixture);
-        await runAssert(hunspell);
-        dispose();
+        it(`${path.basename(fixture)} when mount buffer`, async () => {
+          const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, baseFixturePath, fixture);
+          await runAssert(hunspell);
+          dispose();
+        });
       });
-
-      it(`${path.basename(fixture)} when mount buffer`, async () => {
-        const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, baseFixturePath, fixture);
-        await runAssert(hunspell);
-        dispose();
-      });
-    });
   });
 
   describe('add words or dictionary in runtime', () => {
@@ -196,7 +201,7 @@ describe('hunspell', async () => {
       async (useBuffer: boolean) => {
         const { hunspell, dispose, read } = await getHunspell(useBuffer);
 
-        expect(hunspell.spell('foo')).to.be.false;
+        expect(hunspell.spell('foo')).toBe(false);
 
         if (useBuffer) {
           hunspell.addDictionary(await read(path.join(baseFixturePath, 'break.dic')));
@@ -204,7 +209,7 @@ describe('hunspell', async () => {
           hunspell.addDictionary(read('break.dic'));
         }
 
-        expect(hunspell.spell('foo')).to.be.true;
+        expect(hunspell.spell('foo')).toBe(true);
         dispose();
       }
     );
@@ -214,10 +219,10 @@ describe('hunspell', async () => {
       async (useBuffer: boolean) => {
         const { hunspell, dispose } = await getHunspell(useBuffer);
 
-        expect(hunspell.spell('nonexistword')).to.be.false;
+        expect(hunspell.spell('nonexistword')).toBe(false);
 
         hunspell.addWord('nonexistword');
-        expect(hunspell.spell('nonexistword')).to.be.true;
+        expect(hunspell.spell('nonexistword')).toBe(true);
 
         dispose();
       }
@@ -228,12 +233,12 @@ describe('hunspell', async () => {
       async (useBuffer: boolean) => {
         const { hunspell, dispose } = await getHunspell(useBuffer);
 
-        expect(hunspell.spell('tre')).to.be.false;
+        expect(hunspell.spell('tre')).toBe(false);
 
         hunspell.addWordWithAffix('tre', 'uncreate');
 
-        expect(hunspell.spell('tre')).to.be.true;
-        expect(hunspell.spell('trive')).to.be.true;
+        expect(hunspell.spell('tre')).toBe(true);
+        expect(hunspell.spell('trive')).toBe(true);
 
         dispose();
       }
@@ -244,10 +249,10 @@ describe('hunspell', async () => {
       async (useBuffer: boolean) => {
         const { hunspell, dispose } = await getHunspell(useBuffer);
 
-        expect(hunspell.spell('seven')).to.be.true;
+        expect(hunspell.spell('seven')).toBe(true);
 
         hunspell.removeWord('seven');
-        expect(hunspell.spell('seven')).to.be.false;
+        expect(hunspell.spell('seven')).toBe(false);
 
         dispose();
       }
