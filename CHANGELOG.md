@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.4"></a>
+# [2.0.0-beta.4](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.3...v2.0.0-beta.4) (2019-01-26)
+
+
+### Bug Fixes
+
+* **createmoduleloader:** apply overridden env ([22645b6](https://github.com/kwonoj/hunspell-asm/commit/22645b6))
+
+
+
 <a name="2.0.0-beta.3"></a>
 # [2.0.0-beta.3](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2019-01-26)
 
