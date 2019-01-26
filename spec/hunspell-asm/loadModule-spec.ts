@@ -1,4 +1,4 @@
-import { getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
+import { ENVIRONMENT, getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
 import { loadModule } from '../../src/loadModule';
 
 jest.mock('../../src/lib/hunspell.wasm', () => jest.fn(), { virtual: true });
@@ -77,7 +77,7 @@ describe('loadModule', () => {
     });
     await loadModule();
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2]).toBeUndefined();
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2]).toEqual({ ENVIRONMENT: ENVIRONMENT.NODE });
   });
 
   it('should override path for wasm binary on browser', async () => {
