@@ -1,3 +1,15 @@
+<a name="2.0.0-beta.3"></a>
+# [2.0.0-beta.3](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.2...v2.0.0-beta.3) (2019-01-26)
+
+
+### Features
+
+* **hunspell:** bump up hunspell with asmjs ([845ee54](https://github.com/kwonoj/hunspell-asm/commit/845ee54))
+* **loadasmmodule:** asmjs loader ([a620219](https://github.com/kwonoj/hunspell-asm/commit/a620219))
+* **loadmodule:** reintroduce env override ([d2f651d](https://github.com/kwonoj/hunspell-asm/commit/d2f651d))
+
+
+
 <a name="2.0.0-beta.2"></a>
 # [2.0.0-beta.2](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2018-11-02)
 
