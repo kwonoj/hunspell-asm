@@ -10,22 +10,30 @@ import { log } from './util/logger';
  * @param [InitOptions] Options to initialize cld3 wasm binary.
  * @param {number} [InitOptions.timeout] - timeout to wait wasm binary compilation & load.
  * @param {string | object} [InitOptions.locateBinary] - custom resolution logic for wasm binary.
+ * @param {ENVIRONMENT} [InitOptions.environment] For overriding running environment
  * It could be either remote endpoint url, or loader-returned object for bundler. Check examples/browser_* for references.
  *
  * @returns {() => Promise<CldFactory>} Function to load module
  */
 const loadModule = async ({
   timeout,
-  locateBinary
-}: Partial<{ timeout: number; locateBinary: (filePath: string) => string | object }> = {}) => {
-  log(`loadModule: loading hunspell module`);
+  locateBinary,
+  environment
+}: Partial<{
+  timeout: number;
+  locateBinary: (filePath: string) => string | object;
+  environment?: ENVIRONMENT;
+}> = {}) => {
+  const env = environment ? environment : isNode() ? ENVIRONMENT.NODE : ENVIRONMENT.WEB;
+
+  log(`loadModule: loading hunspell module`, { env });
 
   //imports MODULARIZED emscripten preamble
   //tslint:disable-next-line:no-require-imports no-var-requires
-  const runtimeModule = isNode() ? require(`./lib/hunspell_node`) : require(`./lib/hunspell_web`);
+  const runtimeModule = require(`./lib/hunspell`);
 
   //tslint:disable-next-line:no-require-imports no-var-requires
-  const lookupBinary = locateBinary || ((_filePath: string) => require('./lib/hunspell_web.wasm'));
+  const lookupBinary = locateBinary || ((_filePath: string) => require('./lib/hunspell.wasm'));
 
   //Build module object to construct wasm binary module via emscripten preamble.
   //This allows to override default wasm binary resolution in preamble.
@@ -39,7 +47,7 @@ const loadModule = async ({
         };
 
   const moduleLoader = await getModuleLoader<HunspellFactory, HunspellAsmModule>(
-    (runtime: HunspellAsmModule) => hunspellLoader(runtime, isNode() ? ENVIRONMENT.NODE : ENVIRONMENT.WEB),
+    (runtime: HunspellAsmModule) => hunspellLoader(runtime, env),
     runtimeModule,
     overriddenModule,
     { timeout }
