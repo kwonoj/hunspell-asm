@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
 import { loadModule } from '../../src/loadModule';
 
@@ -37,7 +36,7 @@ describe('loadModule', () => {
     });
     await loadModule();
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).to.equal(webhunspellMock);
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(webhunspellMock);
   });
 
   it('should create module on node', async () => {
@@ -47,7 +46,7 @@ describe('loadModule', () => {
     (getModuleLoaderMock as jest.Mock).mockReturnValueOnce(mockModuleLoader);
     await loadModule();
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).to.equal(nodehunspellMock);
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(nodehunspellMock);
   });
 
   it('should use lookupBinary on browser', async () => {
@@ -56,7 +55,7 @@ describe('loadModule', () => {
     (getModuleLoaderMock as jest.Mock).mockReturnValueOnce(mockModuleLoader);
     await loadModule({ locateBinary: () => 'dummy' });
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2].locateFile('test.wasm')).to.equal('dummy');
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2].locateFile('test.wasm')).toEqual('dummy');
   });
 
   it('should use lookupBinary on node', async () => {
@@ -67,7 +66,7 @@ describe('loadModule', () => {
     await loadModule({ locateBinary: () => 'dummy' });
 
     const { locateFile } = (getModuleLoaderMock as jest.Mock).mock.calls[0][2];
-    expect(locateFile('test.wasm')).to.equal('dummy');
+    expect(locateFile('test.wasm')).toEqual('dummy');
   });
 
   it('should not override path for wasm binary on node', async () => {
@@ -80,7 +79,7 @@ describe('loadModule', () => {
     });
     await loadModule();
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2]).to.be.undefined;
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2]).toBeUndefined();
   });
 
   it('should override path for wasm binary on browser', async () => {
@@ -96,7 +95,7 @@ describe('loadModule', () => {
     const { locateFile } = (getModuleLoaderMock as jest.Mock).mock.calls[0][2];
 
     //tslint:disable-next-line:no-require-imports no-var-requires
-    expect(locateFile('cld3_web.wasm')).to.deep.equal(require('../../src/lib/hunspell_web.wasm'));
-    expect(locateFile('other.wast')).to.equal('other.wast');
+    expect(locateFile('cld3_web.wasm')).toEqual(require('../../src/lib/hunspell_web.wasm'));
+    expect(locateFile('other.wast')).toEqual('other.wast');
   });
 });

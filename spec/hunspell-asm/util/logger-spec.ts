@@ -1,9 +1,8 @@
-import { expect } from 'chai';
 import { enableLogger, log } from '../../../src/util/logger';
 
 describe('logger', () => {
   it('should do nothing by default', () => {
-    expect(() => log('')).to.not.throw();
+    expect(() => log('')).not.toThrowError();
   });
 
   it('should allow override logger', () => {
@@ -15,7 +14,7 @@ describe('logger', () => {
 
     log(message, value);
 
-    expect(mock.mock.calls).to.have.lengthOf(1);
-    expect(mock.mock.calls[0]).to.deep.equal([`hunspell::${message}`, value]);
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock.mock.calls[0]).toEqual([`hunspell::${message}`, value]);
   });
 });
