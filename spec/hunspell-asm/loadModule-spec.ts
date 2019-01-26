@@ -1,9 +1,8 @@
 import { getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
 import { loadModule } from '../../src/loadModule';
 
-jest.mock('../../src/lib/hunspell_web.wasm', () => jest.fn(), { virtual: true });
-jest.mock('../../src/lib/hunspell_web', () => jest.fn(), { virtual: true });
-jest.mock('../../src/lib/hunspell_node', () => jest.fn(), { virtual: true });
+jest.mock('../../src/lib/hunspell.wasm', () => jest.fn(), { virtual: true });
+jest.mock('../../src/lib/hunspell', () => jest.fn(), { virtual: true });
 jest.mock('emscripten-wasm-loader', () => ({
   isWasmEnabled: jest.fn(),
   isNode: jest.fn(),
@@ -14,8 +13,7 @@ jest.mock('emscripten-wasm-loader', () => ({
   }
 }));
 
-const webhunspellMock = require('../../src/lib/hunspell_web'); //tslint:disable-line:no-require-imports no-var-requires
-const nodehunspellMock = require('../../src/lib/hunspell_node'); //tslint:disable-line:no-require-imports no-var-requires
+const hunspellMock = require('../../src/lib/hunspell'); //tslint:disable-line:no-require-imports no-var-requires
 
 const getModuleMock = () => ({
   cwrap: jest.fn(),
@@ -36,7 +34,7 @@ describe('loadModule', () => {
     });
     await loadModule();
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(webhunspellMock);
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(hunspellMock);
   });
 
   it('should create module on node', async () => {
@@ -46,7 +44,7 @@ describe('loadModule', () => {
     (getModuleLoaderMock as jest.Mock).mockReturnValueOnce(mockModuleLoader);
     await loadModule();
 
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(nodehunspellMock);
+    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(hunspellMock);
   });
 
   it('should use lookupBinary on browser', async () => {
@@ -95,7 +93,7 @@ describe('loadModule', () => {
     const { locateFile } = (getModuleLoaderMock as jest.Mock).mock.calls[0][2];
 
     //tslint:disable-next-line:no-require-imports no-var-requires
-    expect(locateFile('cld3_web.wasm')).toEqual(require('../../src/lib/hunspell_web.wasm'));
+    expect(locateFile('cld3_web.wasm')).toEqual(require('../../src/lib/hunspell.wasm'));
     expect(locateFile('other.wast')).toEqual('other.wast');
   });
 });
