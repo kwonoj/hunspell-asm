@@ -1,5 +1,7 @@
-import { ENVIRONMENT, isNode } from 'emscripten-wasm-loader';
-import { createModuleLoader } from './createModuleLoader';
+import { ENVIRONMENT, getModuleLoader, isNode } from 'emscripten-wasm-loader';
+import { HunspellAsmModule } from './HunspellAsmModule';
+import { HunspellFactory } from './HunspellFactory';
+import { hunspellLoader } from './hunspellLoader';
 import { log } from './util/logger';
 
 /**
@@ -20,14 +22,14 @@ const loadModule = async (
     environment?: ENVIRONMENT;
   }> = {}
 ) => {
-  log(`loadModule: loading hunspell wasm binary`);
-
   //imports MODULARIZED emscripten preamble
   //tslint:disable-next-line:no-require-imports no-var-requires
   const runtime = require(`./lib/hunspell`);
 
-  const { locateBinary, environment } = initOptions;
+  const { locateBinary, environment, timeout } = initOptions;
   const env = environment ? environment : isNode() ? ENVIRONMENT.NODE : ENVIRONMENT.WEB;
+
+  log(`loadModule: loading hunspell wasm binary`, { initOptions });
 
   //Override default wasm binary resolution in preamble if needed.
   //By default, hunspell-asm overrides to direct require to binary on *browser* environment to allow bundler like webpack resolves it.
@@ -39,13 +41,19 @@ const loadModule = async (
         //tslint:disable-next-line:no-require-imports no-var-requires
         ((filePath: string) => (filePath.endsWith('.wasm') ? require('./lib/hunspell.wasm') : filePath));
 
-  return createModuleLoader(
-    {
-      locateBinary: lookupBinary,
-      ...initOptions
-    },
-    runtime
+  //https://github.com/kwonoj/docker-hunspell-wasm/issues/63
+  //Build module object to construct wasm binary module via emscripten preamble.
+  //apply overridden environment values to custom patched hunspell preamble.
+  const overriddenModule = { locateFile: lookupBinary, ENVIRONMENT: env };
+
+  const moduleLoader = await getModuleLoader<HunspellFactory, HunspellAsmModule>(
+    (runtime: HunspellAsmModule) => hunspellLoader(runtime, env),
+    runtime,
+    overriddenModule,
+    { timeout }
   );
+
+  return moduleLoader();
 };
 
 export { loadModule };
