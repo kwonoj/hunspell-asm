@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.6"></a>
+# [2.0.0-beta.6](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.5...v2.0.0-beta.6) (2019-01-27)
+
+
+### Features
+
+* **loadmodule:** deprecate asm ([b49b731](https://github.com/kwonoj/hunspell-asm/commit/b49b731))
+
+
+
 <a name="2.0.0-beta.5"></a>
 # [2.0.0-beta.5](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.4...v2.0.0-beta.5) (2019-01-26)
 
