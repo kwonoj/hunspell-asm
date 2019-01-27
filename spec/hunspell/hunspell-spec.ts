@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 import * as unixify from 'unixify';
 import { Hunspell } from '../../src/Hunspell';
 import { HunspellFactory } from '../../src/HunspellFactory';
-import { loadAsmModule } from '../../src/loadAsmModule';
 import { loadModule } from '../../src/loadModule';
 import { excludedWords } from '../util';
 
@@ -68,12 +67,10 @@ describe('hunspell', async () => {
   //setting up path to fixture
   const baseFixturePath = path.join(__dirname, '../__fixtures__');
   let hunspellFactory: HunspellFactory;
-  let hunspellAsmFactory: HunspellFactory;
 
   //load module one time before test begins
   beforeAll(async done => {
     hunspellFactory = await loadModule();
-    hunspellAsmFactory = await loadAsmModule();
     done();
   });
 
@@ -112,20 +109,8 @@ describe('hunspell', async () => {
       dispose();
     });
 
-    it(`${path.basename(fixture)} when mount directory with asmjs`, async () => {
-      const { hunspell, dispose } = mountDirHunspell(hunspellAsmFactory, dirPath, fixture);
-      await runAssert(hunspell);
-      dispose();
-    });
-
     it(`${path.basename(fixture)} when mount buffer`, async () => {
       const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, dirPath, fixture);
-      await runAssert(hunspell);
-      dispose();
-    });
-
-    it(`${path.basename(fixture)} when mount buffer with asmjs`, async () => {
-      const { hunspell, dispose } = await mountBufferHunspell(hunspellAsmFactory, dirPath, fixture);
       await runAssert(hunspell);
       dispose();
     });
@@ -199,20 +184,8 @@ describe('hunspell', async () => {
           dispose();
         });
 
-        it(`${path.basename(fixture)} when mount directory with asmjs`, async () => {
-          const { hunspell, dispose } = mountDirHunspell(hunspellAsmFactory, baseFixturePath, fixture);
-          await runAssert(hunspell);
-          dispose();
-        });
-
         it(`${path.basename(fixture)} when mount buffer`, async () => {
           const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, baseFixturePath, fixture);
-          await runAssert(hunspell);
-          dispose();
-        });
-
-        it(`${path.basename(fixture)} when mount buffer with asmjs`, async () => {
-          const { hunspell, dispose } = await mountBufferHunspell(hunspellAsmFactory, baseFixturePath, fixture);
           await runAssert(hunspell);
           dispose();
         });
