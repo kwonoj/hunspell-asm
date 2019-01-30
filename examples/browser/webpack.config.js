@@ -12,15 +12,6 @@ module.exports = {
   },
   mode: 'development',
   module: {
-    /**
-     * Override default rules to avoid parsing wasm file as module
-     */
-    defaultRules: [
-      {
-        type: 'javascript/auto',
-        resolve: {}
-      }
-    ],
     rules: [
       {
         test: /\.tsx?$/,
@@ -34,14 +25,6 @@ module.exports = {
             skipDefaultLibCheck: true
           }
         }
-      },
-      /**
-       * Let file loader copies wasm binary instead of bundling
-       */
-      {
-        test: /.wasm$/,
-        type: 'javascript/auto',
-        loader: 'file-loader'
       }
     ]
   },
