@@ -29,10 +29,10 @@ const hunspellFactory = await loadModule();
 `loadModule` loads wasm binary, initialize it, and returns factory function to create instance of hunspell.
 
 ```js
-loadModule({timeout?: number, locateBinary?: (wasmPath: string) => string | object}): Promise<HunspellFactory>
+loadModule({timeout?: number, environment?: ENVIRONMENT}): Promise<HunspellFactory>
 ```
 
-It allows to specify timeout to wait until wasm binary compliation & load, also allows to override to lookup binary of wasm. Based on environment & bundling configurations, it is not sufficient to rely on default resolution logic. `locateBinary` expects to return path of binary (i.e remote endpoint url) or loader-specific object if it's bundled by bundler. Check [examples](https://github.com/kwonoj/hunspell-asm/tree/master/examples) for usecases.
+It allows to specify timeout to wait until wasm binary compliation & load. By default `hunspell-asm` tries to detect running environment, but for some cases (i.e `electron`) it is possible to override.
 
 ## Mounting files
 
