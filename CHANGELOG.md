@@ -1,3 +1,14 @@
+<a name="2.0.0-beta.7"></a>
+# [2.0.0-beta.7](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.6...v2.0.0-beta.7) (2019-01-30)
+
+
+### Features
+
+* **hunspell:** bump up hunspell binary ([9ed737d](https://github.com/kwonoj/hunspell-asm/commit/9ed737d))
+* **loadmodule:** deprecate locatebinary, back to single file ([4b8f5b0](https://github.com/kwonoj/hunspell-asm/commit/4b8f5b0))
+
+
+
 <a name="2.0.0-beta.6"></a>
 # [2.0.0-beta.6](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.5...v2.0.0-beta.6) (2019-01-27)
 
