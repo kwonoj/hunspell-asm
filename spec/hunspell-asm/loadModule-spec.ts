@@ -1,7 +1,6 @@
 import { ENVIRONMENT, getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
 import { loadModule } from '../../src/loadModule';
 
-jest.mock('../../src/lib/hunspell.wasm', () => jest.fn(), { virtual: true });
 jest.mock('../../src/lib/hunspell', () => jest.fn(), { virtual: true });
 jest.mock('emscripten-wasm-loader', () => ({
   isWasmEnabled: jest.fn(),
@@ -47,26 +46,6 @@ describe('loadModule', () => {
     expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(hunspellMock);
   });
 
-  it('should use lookupBinary on browser', async () => {
-    const mockModuleLoader = jest.fn();
-    (isNode as jest.Mock).mockReturnValue(false);
-    (getModuleLoaderMock as jest.Mock).mockReturnValueOnce(mockModuleLoader);
-    await loadModule({ locateBinary: () => 'dummy' });
-
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2].locateFile('test.wasm')).toEqual('dummy');
-  });
-
-  it('should use lookupBinary on node', async () => {
-    const mockModuleLoader = jest.fn();
-    (isNode as jest.Mock).mockReturnValue(true);
-
-    (getModuleLoaderMock as jest.Mock).mockReturnValueOnce(mockModuleLoader);
-    await loadModule({ locateBinary: () => 'dummy' });
-
-    const { locateFile } = (getModuleLoaderMock as jest.Mock).mock.calls[0][2];
-    expect(locateFile('test.wasm')).toEqual('dummy');
-  });
-
   it('should not override path for wasm binary on node', async () => {
     const mockModuleLoader = jest.fn();
     (isNode as jest.Mock).mockReturnValue(true);
@@ -78,22 +57,5 @@ describe('loadModule', () => {
     await loadModule();
 
     expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2]).toEqual({ ENVIRONMENT: ENVIRONMENT.NODE });
-  });
-
-  it('should override path for wasm binary on browser', async () => {
-    const mockModuleLoader = jest.fn();
-    (isNode as jest.Mock).mockReturnValue(false);
-
-    (getModuleLoaderMock as jest.Mock).mockImplementationOnce((cb: Function) => {
-      cb(getModuleMock());
-      return mockModuleLoader;
-    });
-    await loadModule();
-
-    const { locateFile } = (getModuleLoaderMock as jest.Mock).mock.calls[0][2];
-
-    //tslint:disable-next-line:no-require-imports no-var-requires
-    expect(locateFile('cld3_web.wasm')).toEqual(require('../../src/lib/hunspell.wasm'));
-    expect(locateFile('other.wast')).toEqual('other.wast');
   });
 });

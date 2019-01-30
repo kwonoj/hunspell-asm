@@ -9,7 +9,7 @@ import { log } from './util/logger';
  *
  * @param [InitOptions] Options to initialize cld3 wasm binary.
  * @param {number} [InitOptions.timeout] - timeout to wait wasm binary compilation & load.
- * @param {string | object} [InitOptions.locateBinary] - custom resolution logic for wasm binary.
+ * @param {string | object} [InitOptions.locateBinary] - custom resolution logic for wasm binary. (not supported)
  * @param {ENVIRONMENT} [InitOptions.environment] For overriding running environment
  * It could be either remote endpoint url, or loader-returned object for bundler. Check examples/browser_* for references.
  *
@@ -18,7 +18,6 @@ import { log } from './util/logger';
 const loadModule = async (
   initOptions: Partial<{
     timeout: number;
-    locateBinary: (filePath: string) => string | object;
     environment?: ENVIRONMENT;
   }> = {}
 ) => {
@@ -26,25 +25,15 @@ const loadModule = async (
   //tslint:disable-next-line:no-require-imports no-var-requires
   const runtime = require(`./lib/hunspell`);
 
-  const { locateBinary, environment, timeout } = initOptions;
+  const { environment, timeout } = initOptions;
   const env = environment ? environment : isNode() ? ENVIRONMENT.NODE : ENVIRONMENT.WEB;
 
   log(`loadModule: loading hunspell wasm binary`, { initOptions });
 
-  //Override default wasm binary resolution in preamble if needed.
-  //By default, hunspell-asm overrides to direct require to binary on *browser* environment to allow bundler like webpack resolves it.
-  //On node, it relies on default resolution logic.
-  const lookupBinary =
-    env === ENVIRONMENT.NODE && !locateBinary
-      ? undefined
-      : locateBinary ||
-        //tslint:disable-next-line:no-require-imports no-var-requires
-        ((filePath: string) => (filePath.endsWith('.wasm') ? require('./lib/hunspell.wasm') : filePath));
-
   //https://github.com/kwonoj/docker-hunspell-wasm/issues/63
   //Build module object to construct wasm binary module via emscripten preamble.
   //apply overridden environment values to custom patched hunspell preamble.
-  const overriddenModule = { locateFile: lookupBinary, ENVIRONMENT: env };
+  const overriddenModule = { ENVIRONMENT: env };
 
   const moduleLoader = await getModuleLoader<HunspellFactory, HunspellAsmModule>(
     (runtime: HunspellAsmModule) => hunspellLoader(runtime, env),
