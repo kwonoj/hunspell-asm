@@ -1,6 +1,6 @@
 {
   "name": "hunspell-asm",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.7",
   "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -9,7 +9,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "b62e627-190127"
+    "hunspell-version": "5dee226-190129"
   },
   "lint-staged": {
     "*.ts": [
@@ -50,12 +50,12 @@
   ],
   "homepage": "https://github.com/kwonoj/hunspell-asm#readme",
   "devDependencies": {
-    "@commitlint/cli": "^7.3.2",
+    "@commitlint/cli": "^7.4.0",
     "@commitlint/config-angular": "^7.3.1",
     "@types/chai": "^4.1.7",
     "@types/jest": "^23.3.13",
     "@types/lodash": "^4.14.120",
-    "@types/node": "^10.12.18",
+    "@types/node": "^10.12.19",
     "@types/shelljs": "^0.8.2",
     "chai": "^4.2.0",
     "commitizen": "^3.0.5",
@@ -63,11 +63,11 @@
     "husky": "^1.3.1",
     "jest": "^23.6.0",
     "jest-spin-reporter": "^1.0.2",
-    "lint-staged": "^8.1.0",
+    "lint-staged": "^8.1.1",
     "lodash": "^4.17.11",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.16.1",
-    "rxjs": "^6.3.3",
+    "rxjs": "^6.4.0",
     "shelljs": "^0.8.3",
     "shx": "^0.3.2",
     "ts-jest": "^23.10.5",
