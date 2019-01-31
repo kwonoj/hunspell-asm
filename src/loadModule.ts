@@ -23,7 +23,7 @@ const loadModule = async (
 ) => {
   //imports MODULARIZED emscripten preamble
   //tslint:disable-next-line:no-require-imports no-var-requires
-  const runtime = require(`./lib/hunspell`);
+  const runtime = require(`./lib/hunspell-asm`);
 
   const { environment, timeout } = initOptions;
   const env = environment ? environment : isNode() ? ENVIRONMENT.NODE : ENVIRONMENT.WEB;
