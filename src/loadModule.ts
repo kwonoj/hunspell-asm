@@ -5,15 +5,15 @@ import { hunspellLoader } from './hunspellLoader';
 import { log } from './util/logger';
 
 /**
- * Load, initialize wasm binary to use actual cld wasm instances.
+ * Load, initialize wasm binary to use actual hunspell wasm instances.
  *
- * @param [InitOptions] Options to initialize cld3 wasm binary.
+ * @param [InitOptions] Options to initialize hunspell wasm binary.
  * @param {number} [InitOptions.timeout] - timeout to wait wasm binary compilation & load.
  * @param {string | object} [InitOptions.locateBinary] - custom resolution logic for wasm binary. (not supported)
  * @param {ENVIRONMENT} [InitOptions.environment] For overriding running environment
  * It could be either remote endpoint url, or loader-returned object for bundler. Check examples/browser_* for references.
  *
- * @returns {() => Promise<CldFactory>} Function to load module
+ * @returns {() => Promise<HunspellFactory>} Function to load module
  */
 const loadModule = async (
   initOptions: Partial<{

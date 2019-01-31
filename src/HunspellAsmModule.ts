@@ -1,5 +1,4 @@
-/** @internal */
-export type cwrapSignature = <T = Function>(fn: string, returnType: string | null, parameterType: Array<string>) => T;
+import { BaseAsmModule } from 'emscripten-wasm-loader';
 
 /** @internal */
 export type FILESYSTEMS = {
@@ -29,13 +28,6 @@ export type FS = {
  * https://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html
  */
 /** @internal */
-export interface HunspellAsmModule {
-  cwrap: cwrapSignature;
-  FS: FS;
-  _free: (ptr: number) => void;
+export interface HunspellAsmModule extends Required<BaseAsmModule> {
   allocateUTF8: (str: string) => number;
-  stackAlloc: (length: number) => number;
-  getValue: <T = any>(ptr: number, type: string, nosafe?: boolean) => T;
-  Pointer_stringify: (ptr: number) => string;
-  initializeRuntime(): Promise<boolean>;
 }

@@ -19,7 +19,7 @@ import { wrapHunspellInterface } from './wrapHunspellInterface';
 
 /** @internal */
 export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRONMENT): HunspellFactory => {
-  const { cwrap, FS, _free, allocateUTF8, stackAlloc, getValue, Pointer_stringify } = asmModule;
+  const { cwrap, FS, _free, allocateUTF8, _malloc, getValue, Pointer_stringify } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
@@ -63,7 +63,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
         },
         spell: (word: string) => !!usingParamPtr(word, wordPtr => hunspellInterface.spell(hunspellPtr, wordPtr)),
         suggest: (word: string) => {
-          const suggestionListPtr = stackAlloc(4);
+          const suggestionListPtr = _malloc(4);
           const suggestionCount = usingParamPtr(word, wordPtr =>
             hunspellInterface.suggest(hunspellPtr, suggestionListPtr, wordPtr)
           );
@@ -78,6 +78,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
 
           hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
 
+          _free(suggestionListPtr);
           return ret;
         },
         addDictionary: (dictPath: string) =>
