@@ -1,4 +1,4 @@
-import { cwrapSignature } from './HunspellAsmModule';
+import { cwrapSignature } from 'emscripten-wasm-loader';
 
 /**
  * Wrap hunspell exported interfaces via cwrap for resuable mannter.

@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.8"></a>
+# [2.0.0-beta.8](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.7...v2.0.0-beta.8) (2019-01-31)
+
+
+### Bug Fixes
+
+* **suggest:** free allocated ptr for list ([6708573](https://github.com/kwonoj/hunspell-asm/commit/6708573))
+
+
+
 <a name="2.0.0-beta.7"></a>
 # [2.0.0-beta.7](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.6...v2.0.0-beta.7) (2019-01-30)
 
