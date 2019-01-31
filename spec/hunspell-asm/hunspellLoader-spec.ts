@@ -111,7 +111,8 @@ describe('HunspellFactory', () => {
 
     asmModule = {
       cwrap: jest.fn(),
-      stackAlloc: jest.fn(() => 1111), //dummy ptr number
+      stackAlloc: jest.fn(() => 1111), //dummy ptr number,
+      _malloc: jest.fn(() => 1111), //dummy ptr number,
       stackSave: jest.fn(),
       stackRestore: jest.fn(),
       FS: {
