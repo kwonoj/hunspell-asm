@@ -1,10 +1,9 @@
 import * as fs from 'fs';
-import { includes } from 'lodash';
+import { flatten, includes } from 'lodash';
 import * as path from 'path';
 import { bindNodeCallback } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as unixify from 'unixify';
-import { Hunspell } from '../../src/Hunspell';
 import { HunspellFactory } from '../../src/HunspellFactory';
 import { loadModule } from '../../src/loadModule';
 import { excludedWords } from '../util';
@@ -49,23 +48,57 @@ const mountBufferHunspell = async (factory: HunspellFactory, dirPath: string, fi
 };
 
 /**
+ * Location to fixture files
+ */
+const baseFixturePath = path.join(__dirname, '../__fixtures__');
+
+enum TestType {
+  MatchSpell = '.good',
+  MismatchSpell = '.wrong',
+  Suggestion = '.sug'
+}
+
+enum MountType {
+  Buffer = 'buffer',
+  Directory = 'directory'
+}
+
+/**
  * Iterate fixture directory, returns array of test for specified type.
  * @param fixturePath path to fixture
  * @param testType type of test by fixture extension. `good` is for matched spell, `wrong` for misspell, `sug` for suggestion.
  */
-const getFixtureList = (fixturePath: string, testType: '.good' | '.wrong' | '.sug') =>
-  fs
-    .readdirSync(fixturePath)
-    .filter(file => path.extname(file) === testType)
-    .map(file => path.basename(file, testType));
+const getFixtureList = (fixturePath: string, testType: TestType, skipList: Array<string> = []) =>
+  flatten(
+    fs
+      .readdirSync(fixturePath)
+      .filter(file => path.extname(file) === testType)
+      .map(file => path.basename(file, testType))
+      .filter(x => {
+        if (includes(skipList, x)) {
+          console.log(`Skipping test fixture '${x}'`); //tslint:disable-line:no-console
+          return false;
+        }
+        return true;
+      })
+      .map<Array<[string, MountType, ((factory: HunspellFactory) => ReturnType<typeof mountBufferHunspell>)]>>(
+        fixture => [
+          [fixture, MountType.Directory, async factory => mountDirHunspell(factory, baseFixturePath, fixture)],
+          [fixture, MountType.Buffer, async factory => await mountBufferHunspell(factory, baseFixturePath, fixture)]
+        ]
+      )
+  );
+
+const readWords = async (fixture: string, testType: TestType): Promise<Array<string>> =>
+  await (readFile as any)(`${path.join(baseFixturePath, fixture)}${testType}`, 'utf-8')
+    .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
+    .toPromise();
 
 /**
- * running original hunspell's spec using `mountDir` via FS.NODEFS.
+ * running original hunspell's spec.
  *
  */
 describe('hunspell', async () => {
-  //setting up path to fixture
-  const baseFixturePath = path.join(__dirname, '../__fixtures__');
   let hunspellFactory: HunspellFactory;
 
   //load module one time before test begins
@@ -82,128 +115,96 @@ describe('hunspell', async () => {
    * @param assertionValue function to get value to assert
    * @param expected expected value to compare with assertionValue.
    */
-  const assert = (
-    dirPath: string,
-    fixture: string,
-    testType: '.good' | '.wrong' | '.sug',
-    assertionValue: (hunspell: Hunspell, word: string) => any,
-    expected: any
-  ) => {
-    const runAssert = async (hunspell: Hunspell) => {
-      const words: Array<string> = await (readFile as any)(`${path.join(dirPath, fixture)}${testType}`, 'utf-8')
-        .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
-        .toPromise();
+  const buildSpellAssertion = (testType: TestType, expectedValue: any, skipList: Array<string> = []) => {
+    const fixtureList = getFixtureList(baseFixturePath, testType, skipList);
+
+    it.each(fixtureList)(`fixture '%s' for %s`, async (fixture, _mountType, factory) => {
+      const { hunspell, dispose } = await factory(hunspellFactory);
+      const words = await readWords(fixture, testType);
 
       words
         .filter(word => !includes(excludedWords, word))
         .forEach(word => {
-          const base = { word };
-          const value = assertionValue(hunspell, word);
-          expect({ ...base, value }).toEqual({ ...base, value: expected });
+          const value = hunspell.spell(word);
+          expect({ word, value }).toEqual({ word, value: expectedValue });
         });
-    };
 
-    it(`${path.basename(fixture)} when mount directory`, async () => {
-      const { hunspell, dispose } = mountDirHunspell(hunspellFactory, dirPath, fixture);
-      await runAssert(hunspell);
-      dispose();
-    });
-
-    it(`${path.basename(fixture)} when mount buffer`, async () => {
-      const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, dirPath, fixture);
-      await runAssert(hunspell);
       dispose();
     });
   };
 
-  describe('should match correct word', () => {
-    const fixtureList = getFixtureList(baseFixturePath, '.good');
-    fixtureList
-      .filter(x => x !== 'morph')
-      .forEach(fixture =>
-        assert(baseFixturePath, fixture, '.good', (hunspell: Hunspell, word: string) => hunspell.spell(word), true)
-      );
+  describe('should match correct word', async () => {
+    const matchCorrectWordFixtureSkipList = ['morph'];
+    buildSpellAssertion(TestType.MatchSpell, true, matchCorrectWordFixtureSkipList);
   });
 
-  describe('should match missplled word', () => {
-    const fixtureList = getFixtureList(baseFixturePath, '.wrong');
-    fixtureList.forEach(fixture =>
-      assert(baseFixturePath, fixture, '.wrong', (hunspell: Hunspell, word: string) => hunspell.spell(word), false)
-    );
+  describe('should match missplled word', async () => {
+    buildSpellAssertion(TestType.MismatchSpell, false);
   });
 
-  describe('should suggest missplled word', () => {
-    const fixtureList = getFixtureList(baseFixturePath, '.sug');
-    fixtureList
-      .filter(x => !includes(['1463589', 'i54633', 'map'], x))
-      .forEach(fixture => {
-        const base = path.join(baseFixturePath, `${fixture}`);
-        const suggestions = (
-          [
-            ...fs
-              .readFileSync(`${base}.sug`, 'utf-8')
-              .split('\n')
-              .filter(x => !!x)
-              .map(x => {
-                const splitted = x.split(', ');
-                if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
-                  return splitted[0];
-                }
-                const filtered = splitted.filter(word => !includes(excludedWords, word));
-                if (filtered.length > 0) {
-                  return filtered;
-                }
-                return null;
-              })
-          ] || []
-        ).filter(x => !!x);
+  describe('should suggest misspelled word-refactor', () => {
+    const suggestionFixtureSkipList = ['1463589', 'i54633', 'map'];
+    const fixtureList = getFixtureList(baseFixturePath, TestType.Suggestion, suggestionFixtureSkipList);
 
-        const runAssert = async (hunspell: Hunspell) => {
-          const words: Array<string> = await (readFile as any)(`${path.join(baseFixturePath, fixture)}.wrong`, 'utf-8')
-            .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
-            .toPromise();
+    it.each(fixtureList)(`fixture '%s' for %s`, async (fixture, _mountType, factory) => {
+      const { hunspell, dispose } = await factory(hunspellFactory);
 
-          const suggested: Array<string | Array<string>> = [];
-          //run suggestion, construct results into Array<string|Array<string>>
-          words
-            .filter(word => !includes(excludedWords, word))
-            .forEach(word => {
-              const ret = hunspell.suggest(word);
-              if (ret.length > 0) {
-                suggested.push(ret.length > 1 ? ret : ret[0]);
+      const base = path.join(baseFixturePath, `${fixture}`);
+      const expectedSuggestions = (
+        [
+          ...fs
+            .readFileSync(`${base}.sug`, 'utf-8')
+            .split('\n')
+            .filter(x => !!x)
+            .map(x => {
+              const splitted = x.split(', ');
+              if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
+                return splitted[0];
               }
-            });
+              const filtered = splitted.filter(word => !includes(excludedWords, word));
+              if (filtered.length > 0) {
+                return filtered;
+              }
+              return null;
+            })
+        ] || []
+      ).filter(x => !!x);
 
-          //fixture should equal to actual suggestion
-          expect(suggested).toEqual(suggestions);
-        };
+      const words = await readWords(fixture, TestType.MismatchSpell);
 
-        it(`${path.basename(fixture)} when mount directory`, async () => {
-          const { hunspell, dispose } = mountDirHunspell(hunspellFactory, baseFixturePath, fixture);
-          await runAssert(hunspell);
-          dispose();
+      //run suggestion, construct results into Array<string|Array<string>>
+      const suggested: Array<string | Array<string>> = [];
+      words
+        .filter(word => !includes(excludedWords, word))
+        .forEach(word => {
+          const ret = hunspell.suggest(word);
+          if (ret.length > 0) {
+            suggested.push(ret.length > 1 ? ret : ret[0]);
+          }
         });
 
-        it(`${path.basename(fixture)} when mount buffer`, async () => {
-          const { hunspell, dispose } = await mountBufferHunspell(hunspellFactory, baseFixturePath, fixture);
-          await runAssert(hunspell);
-          dispose();
-        });
-      });
+      //fixture should equal to actual suggestion
+      expect(suggested).toEqual(expectedSuggestions);
+      dispose();
+    });
   });
 
   describe('add words or dictionary in runtime', () => {
-    const getHunspell = (buffer: boolean) =>
-      (buffer ? mountBufferHunspell : mountDirHunspell)(hunspellFactory, baseFixturePath, 'base');
+    const getHunspell = (mountType: MountType) =>
+      (mountType === MountType.Buffer ? mountBufferHunspell : mountDirHunspell)(
+        hunspellFactory,
+        baseFixturePath,
+        'base'
+      );
 
-    it.each([true, false])(
-      'should able to add new dictionary into existing dictionary (useBufferMount: %s)',
-      async (useBuffer: boolean) => {
-        const { hunspell, dispose, read } = await getHunspell(useBuffer);
+    it.each([MountType.Buffer, MountType.Directory])(
+      'should able to add new dictionary into existing dictionary for %s',
+      async (mountType: MountType) => {
+        const { hunspell, dispose, read } = await getHunspell(mountType);
 
         expect(hunspell.spell('foo')).toBe(false);
 
-        if (useBuffer) {
+        if (mountType === MountType.Buffer) {
           hunspell.addDictionary(await read(path.join(baseFixturePath, 'break.dic')));
         } else {
           hunspell.addDictionary(read('break.dic'));
@@ -214,10 +215,10 @@ describe('hunspell', async () => {
       }
     );
 
-    it.each([true, false])(
-      'should able to add new word into existing dictionary (useBufferMount: %s)',
-      async (useBuffer: boolean) => {
-        const { hunspell, dispose } = await getHunspell(useBuffer);
+    it.each([MountType.Buffer, MountType.Directory])(
+      'should able to add new word into existing dictionary for %s',
+      async (mountType: MountType) => {
+        const { hunspell, dispose } = await getHunspell(mountType);
 
         expect(hunspell.spell('nonexistword')).toBe(false);
 
@@ -228,10 +229,10 @@ describe('hunspell', async () => {
       }
     );
 
-    it.each([true, false])(
-      'should able to add new word with affix into existing dictionary (useBufferMount: %s)',
-      async (useBuffer: boolean) => {
-        const { hunspell, dispose } = await getHunspell(useBuffer);
+    it.each([MountType.Buffer, MountType.Directory])(
+      'should able to add new word with affix into existing dictionary for %s',
+      async (mountType: MountType) => {
+        const { hunspell, dispose } = await getHunspell(mountType);
 
         expect(hunspell.spell('tre')).toBe(false);
 
@@ -244,10 +245,10 @@ describe('hunspell', async () => {
       }
     );
 
-    it.each([true, false])(
-      'should able to remove word from existing dictionary (useBufferMount: %s)',
-      async (useBuffer: boolean) => {
-        const { hunspell, dispose } = await getHunspell(useBuffer);
+    it.each([MountType.Buffer, MountType.Directory])(
+      'should able to remove word from existing dictionary for %s',
+      async (mountType: MountType) => {
+        const { hunspell, dispose } = await getHunspell(mountType);
 
         expect(hunspell.spell('seven')).toBe(true);
 
