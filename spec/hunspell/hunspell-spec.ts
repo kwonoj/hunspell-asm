@@ -98,7 +98,7 @@ const readWords = async (fixture: string, testType: TestType): Promise<Array<str
  * running original hunspell's spec.
  *
  */
-describe('hunspell', async () => {
+describe('hunspell', () => {
   let hunspellFactory: HunspellFactory;
 
   //load module one time before test begins
@@ -133,12 +133,12 @@ describe('hunspell', async () => {
     });
   };
 
-  describe('should match correct word', async () => {
+  describe('should match correct word', () => {
     const matchCorrectWordFixtureSkipList = ['morph'];
     buildSpellAssertion(TestType.MatchSpell, true, matchCorrectWordFixtureSkipList);
   });
 
-  describe('should match missplled word', async () => {
+  describe('should match missplled word', () => {
     buildSpellAssertion(TestType.MismatchSpell, false);
   });
 
