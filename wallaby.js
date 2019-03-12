@@ -23,7 +23,7 @@ module.exports = (wallaby) => ({
 
   preprocessors: {
     '**/*.js?(x)': file =>
-      require('babel-core').transform(file.content, {
+      require('@babel/core').transform(file.content, {
         sourceMaps: true,
         filename: file.path,
         presets: ['babel-preset-jest']
