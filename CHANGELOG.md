@@ -1,3 +1,8 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.8...v2.0.0) (2019-01-31)
+
+* Bump up beta.8 to official release
+
 <a name="2.0.0-beta.8"></a>
 # [2.0.0-beta.8](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.7...v2.0.0-beta.8) (2019-01-31)
 
