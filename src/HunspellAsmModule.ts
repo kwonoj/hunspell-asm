@@ -28,6 +28,4 @@ export type FS = {
  * https://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html
  */
 /** @internal */
-export interface HunspellAsmModule extends Required<BaseAsmModule> {
-  allocateUTF8: (str: string) => number;
-}
+export interface HunspellAsmModule extends Required<BaseAsmModule> {}

@@ -6,16 +6,6 @@ import { Hunspell } from './Hunspell';
  */
 export interface HunspellFactory {
   /**
-   * (Node.js only) Mount physical directory into hunspell loader's in-memory filesystem path.
-   * Once it's mounted, hunspell can access physical file with generated in-memory path.
-   *
-   * @param {string} dirPath Absoulte path to directory to mount.
-   *
-   * @return {string} In-memory mounted path for given phsysical path.
-   *                  This path uses unix separator *regardless of platform*
-   */
-  mountDirectory: (dirPath: string) => string;
-  /**
    * Mount a file into hunspell loader's in-memory filesystem path.
    *
    * @param {ArrayBufferView} contents Contents of file to be mounted.
