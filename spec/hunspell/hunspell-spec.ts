@@ -3,27 +3,11 @@ import { flatten, includes } from 'lodash';
 import * as path from 'path';
 import { bindNodeCallback } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as unixify from 'unixify';
 import { HunspellFactory } from '../../src/HunspellFactory';
 import { loadModule } from '../../src/loadModule';
 import { excludedWords } from '../util';
 
 const readFile = bindNodeCallback(fs.readFile);
-
-const mountDirHunspell = (factory: HunspellFactory, dirPath: string, fixture: string) => {
-  const dir = factory.mountDirectory(dirPath);
-  const read = (fileName: string) => unixify(path.join(dir, fileName));
-  const hunspell = factory.create(read(`${fixture}.aff`), read(`${fixture}.dic`));
-
-  return {
-    read,
-    hunspell,
-    dispose: () => {
-      hunspell.dispose();
-      factory.unmount(dir);
-    }
-  };
-};
 
 const mountBufferHunspell = async (factory: HunspellFactory, dirPath: string, fixture: string) => {
   const buffers: Array<string> = [];
@@ -59,8 +43,7 @@ enum TestType {
 }
 
 enum MountType {
-  Buffer = 'buffer',
-  Directory = 'directory'
+  Buffer = 'buffer'
 }
 
 /**
@@ -83,7 +66,6 @@ const getFixtureList = (fixturePath: string, testType: TestType, skipList: Array
       })
       .map<Array<[string, MountType, ((factory: HunspellFactory) => ReturnType<typeof mountBufferHunspell>)]>>(
         fixture => [
-          [fixture, MountType.Directory, async factory => mountDirHunspell(factory, baseFixturePath, fixture)],
           [fixture, MountType.Buffer, async factory => await mountBufferHunspell(factory, baseFixturePath, fixture)]
         ]
       )
@@ -190,73 +172,52 @@ describe('hunspell', () => {
   });
 
   describe('add words or dictionary in runtime', () => {
-    const getHunspell = (mountType: MountType) =>
-      (mountType === MountType.Buffer ? mountBufferHunspell : mountDirHunspell)(
-        hunspellFactory,
-        baseFixturePath,
-        'base'
-      );
+    const getHunspell = () => mountBufferHunspell(hunspellFactory, baseFixturePath, 'base');
 
-    it.each([MountType.Buffer, MountType.Directory])(
-      'should able to add new dictionary into existing dictionary for %s',
-      async (mountType: MountType) => {
-        const { hunspell, dispose, read } = await getHunspell(mountType);
+    it.each([MountType.Buffer])('should able to add new dictionary into existing dictionary for %s', async () => {
+      const { hunspell, dispose, read } = await getHunspell();
 
-        expect(hunspell.spell('foo')).toBe(false);
+      expect(hunspell.spell('foo')).toBe(false);
 
-        if (mountType === MountType.Buffer) {
-          hunspell.addDictionary(await read(path.join(baseFixturePath, 'break.dic')));
-        } else {
-          hunspell.addDictionary(read('break.dic'));
-        }
+      hunspell.addDictionary(await read(path.join(baseFixturePath, 'break.dic')));
 
-        expect(hunspell.spell('foo')).toBe(true);
-        dispose();
-      }
-    );
+      expect(hunspell.spell('foo')).toBe(true);
+      dispose();
+    });
 
-    it.each([MountType.Buffer, MountType.Directory])(
-      'should able to add new word into existing dictionary for %s',
-      async (mountType: MountType) => {
-        const { hunspell, dispose } = await getHunspell(mountType);
+    it.each([MountType.Buffer])('should able to add new word into existing dictionary for %s', async () => {
+      const { hunspell, dispose } = await getHunspell();
 
-        expect(hunspell.spell('nonexistword')).toBe(false);
+      expect(hunspell.spell('nonexistword')).toBe(false);
 
-        hunspell.addWord('nonexistword');
-        expect(hunspell.spell('nonexistword')).toBe(true);
+      hunspell.addWord('nonexistword');
+      expect(hunspell.spell('nonexistword')).toBe(true);
 
-        dispose();
-      }
-    );
+      dispose();
+    });
 
-    it.each([MountType.Buffer, MountType.Directory])(
-      'should able to add new word with affix into existing dictionary for %s',
-      async (mountType: MountType) => {
-        const { hunspell, dispose } = await getHunspell(mountType);
+    it.each([MountType.Buffer])('should able to add new word with affix into existing dictionary for %s', async () => {
+      const { hunspell, dispose } = await getHunspell();
 
-        expect(hunspell.spell('tre')).toBe(false);
+      expect(hunspell.spell('tre')).toBe(false);
 
-        hunspell.addWordWithAffix('tre', 'uncreate');
+      hunspell.addWordWithAffix('tre', 'uncreate');
 
-        expect(hunspell.spell('tre')).toBe(true);
-        expect(hunspell.spell('trive')).toBe(true);
+      expect(hunspell.spell('tre')).toBe(true);
+      expect(hunspell.spell('trive')).toBe(true);
 
-        dispose();
-      }
-    );
+      dispose();
+    });
 
-    it.each([MountType.Buffer, MountType.Directory])(
-      'should able to remove word from existing dictionary for %s',
-      async (mountType: MountType) => {
-        const { hunspell, dispose } = await getHunspell(mountType);
+    it.each([MountType.Buffer])('should able to remove word from existing dictionary for %s', async () => {
+      const { hunspell, dispose } = await getHunspell();
 
-        expect(hunspell.spell('seven')).toBe(true);
+      expect(hunspell.spell('seven')).toBe(true);
 
-        hunspell.removeWord('seven');
-        expect(hunspell.spell('seven')).toBe(false);
+      hunspell.removeWord('seven');
+      expect(hunspell.spell('seven')).toBe(false);
 
-        dispose();
-      }
-    );
+      dispose();
+    });
   });
 });
