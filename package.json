@@ -9,7 +9,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "9d255ff-190611"
+    "hunspell-version": "6bd9053-190612"
   },
   "lint-staged": {
     "*.ts": [
@@ -78,10 +78,8 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
-    "emscripten-wasm-loader": "^2.2.3",
-    "nanoid": "^2.0.3",
-    "tslib": "^1.10.0",
-    "unixify": "^1.0.0"
+    "emscripten-wasm-loader": "^3.0.1",
+    "nanoid": "^2.0.3"
   },
   "engines": {
     "node": ">=4"
