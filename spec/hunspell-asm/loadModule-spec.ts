@@ -7,10 +7,8 @@ jest.mock('emscripten-wasm-loader', () => ({
   isWasmEnabled: jest.fn(),
   isNode: jest.fn(),
   getModuleLoader: jest.fn(),
-  ENVIRONMENT: {
-    WEB: 'WEB',
-    NODE: 'NODE'
-  }
+  mountBuffer: jest.fn(),
+  unmount: jest.fn()
 }));
 
 const getModuleMock = () => ({

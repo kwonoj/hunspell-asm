@@ -1,3 +1,13 @@
+<a name="3.0.1"></a>
+## [3.0.1](https://github.com/kwonoj/hunspell-asm/compare/v3.0.0...v3.0.1) (2019-06-13)
+
+
+### Bug Fixes
+
+* **mountbuffer:** fix dependencies ([a434cd8](https://github.com/kwonoj/hunspell-asm/commit/a434cd8))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0...v3.0.0) (2019-06-13)
 
