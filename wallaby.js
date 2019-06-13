@@ -1,6 +1,7 @@
 module.exports = (wallaby) => ({
   files: [
     "src/**/*.ts",
+    { pattern: 'src/**/lib/**/*.js', instrument: false, load: true },
     { pattern: 'jest-hunspell-asm.json', instrument: false, load: true }
   ],
 
