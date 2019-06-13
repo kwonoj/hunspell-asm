@@ -1,10 +1,11 @@
 <a name="3.0.0"></a>
-# [3.0.0](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0...v3.0.0) (2019-06-12)
+# [3.0.0](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0...v3.0.0) (2019-06-13)
 
 
 ### Features
 
 * **build:** target es2018 for output ([27f6400](https://github.com/kwonoj/hunspell-asm/commit/27f6400))
+* **hunspell:** load env specific binary ([53df646](https://github.com/kwonoj/hunspell-asm/commit/53df646))
 * **hunspellloader:** deprecate mountdirectory ([cb96561](https://github.com/kwonoj/hunspell-asm/commit/cb96561))
 
 

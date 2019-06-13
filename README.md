@@ -29,16 +29,16 @@ const hunspellFactory = await loadModule();
 `loadModule` loads wasm binary, initialize it, and returns factory function to create instance of hunspell.
 
 ```js
-loadModule({timeout?: number, environment?: ENVIRONMENT}): Promise<HunspellFactory>
+loadModule({ timeout?: number }): Promise<HunspellFactory>
 ```
 
-It allows to specify timeout to wait until wasm binary compliation & load. By default `hunspell-asm` tries to detect running environment, but for some cases (i.e `electron`) it is possible to override.
+It allows to specify timeout to wait until wasm binary compliation & load.
 
 ## Mounting files
 
 Wasm binary uses different memory spaces allocated for its own and cannot access plain javascript object / or files directly. `HunspellFactory` provides few interfaces to interop file contents into hunspell.
 
-- `mountBuffer(contents: ArrayBufferView, fileName?: string): string` : Mount contents of file. Environment like browser which doesn't have access to filesystem can use this interface to create each file into memory.
+- `mountBuffer(contents: ArrayBufferView, fileName?: string): string` : Mount contents of file.
 - `unmount(mountedFilePath: string)` : Unmount path if it's exists in memory. If it's bufferFile created by `mountBuffer`, unmount will remove those file object in wasm memory as well.
 
 All of `virtual` paths for mounted filesystem uses unix separator regardless of platform.
