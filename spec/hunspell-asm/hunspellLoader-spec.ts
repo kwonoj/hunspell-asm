@@ -1,13 +1,14 @@
+import { mountBuffer, unmount } from 'emscripten-wasm-loader';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from '../../src/HunspellAsmModule';
 import { HunspellFactory } from '../../src/HunspellFactory';
 import { hunspellLoader } from '../../src/hunspellLoader';
-import { mountBuffer } from '../../src/mountBuffer';
-import { unmount } from '../../src/unmount';
 import { wrapHunspellInterface } from '../../src/wrapHunspellInterface';
 
-jest.mock('../../src/mountBuffer');
-jest.mock('../../src/unmount');
+jest.mock('emscripten-wasm-loader', () => ({
+  mountBuffer: jest.fn(),
+  unmount: jest.fn()
+}));
 jest.mock('../../src/wrapHunspellInterface');
 jest.mock('nanoid');
 
