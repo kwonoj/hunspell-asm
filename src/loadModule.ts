@@ -4,6 +4,9 @@ import { HunspellFactory } from './HunspellFactory';
 import { hunspellLoader } from './hunspellLoader';
 import { log } from './util/logger';
 
+//imports MODULARIZED emscripten preamble
+import * as runtime from './lib/node/hunspell';
+
 /**
  * Load, initialize wasm binary to use actual hunspell wasm instances.
  *
@@ -19,10 +22,6 @@ const loadModule = async (
     timeout: number;
   }> = {}
 ) => {
-  //imports MODULARIZED emscripten preamble
-  //tslint:disable-next-line:no-require-imports no-var-requires
-  const runtime = require(`./lib/hunspell`);
-
   const { timeout } = initOptions;
   log(`loadModule: loading hunspell wasm binary`, { initOptions });
 

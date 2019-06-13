@@ -5,11 +5,15 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
+  "browser": {
+    "./dist/cjs/lib/node/hunspell.js": "./dist/cjs/lib/browser/hunspell.js",
+    "./dist/esm/lib/node/hunspell.js": "./dist/esm/lib/browser/hunspell.js"
+  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "6bd9053-190612"
+    "hunspell-version": "9b2c03c-190612"
   },
   "lint-staged": {
     "*.ts": [
