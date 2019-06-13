@@ -1,7 +1,7 @@
-import { ENVIRONMENT, getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
+import { getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
 import { loadModule } from '../../src/loadModule';
 
-jest.mock('../../src/lib/hunspell', () => jest.fn(), { virtual: true });
+jest.mock('../../src/lib/node/hunspell', () => jest.fn(), { virtual: true });
 jest.mock('emscripten-wasm-loader', () => ({
   isWasmEnabled: jest.fn(),
   isNode: jest.fn(),
@@ -12,14 +12,14 @@ jest.mock('emscripten-wasm-loader', () => ({
   }
 }));
 
-const hunspellMock = require('../../src/lib/hunspell'); //tslint:disable-line:no-require-imports no-var-requires
+const hunspellMock = require('../../src/lib/node/hunspell'); //tslint:disable-line:no-require-imports no-var-requires
 
 const getModuleMock = () => ({
   cwrap: jest.fn(),
   FS: { mkdir: jest.fn() },
   Runtime: jest.fn(),
   getValue: jest.fn(),
-  Pointer_stringify: jest.fn()
+  UTF8ToString: jest.fn()
 });
 
 describe('loadModule', () => {
@@ -44,18 +44,5 @@ describe('loadModule', () => {
     await loadModule();
 
     expect((getModuleLoaderMock as jest.Mock).mock.calls[0][1]).toEqual(hunspellMock);
-  });
-
-  it('should not override path for wasm binary on node', async () => {
-    const mockModuleLoader = jest.fn();
-    (isNode as jest.Mock).mockReturnValue(true);
-
-    (getModuleLoaderMock as jest.Mock).mockImplementationOnce((cb: Function) => {
-      cb(getModuleMock());
-      return mockModuleLoader;
-    });
-    await loadModule();
-
-    expect((getModuleLoaderMock as jest.Mock).mock.calls[0][2]).toEqual({ ENVIRONMENT: ENVIRONMENT.NODE });
   });
 });

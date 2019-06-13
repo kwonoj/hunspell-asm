@@ -1,3 +1,21 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0...v3.0.0) (2019-06-12)
+
+
+### Features
+
+* **build:** target es2018 for output ([27f6400](https://github.com/kwonoj/hunspell-asm/commit/27f6400))
+* **hunspellloader:** deprecate mountdirectory ([cb96561](https://github.com/kwonoj/hunspell-asm/commit/cb96561))
+
+
+### BREAKING CHANGES
+
+* **hunspellloader:** dictionary should be mounted via buffer
+* **build:** requires runtime for es2018, or need downlevel
+transpiling
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/kwonoj/hunspell-asm/compare/v2.0.0-beta.8...v2.0.0) (2019-01-31)
 

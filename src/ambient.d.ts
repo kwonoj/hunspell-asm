@@ -1,2 +1,2 @@
 declare module 'nanoid';
-declare module 'unixify';
+declare module '*/lib/node/hunspell';

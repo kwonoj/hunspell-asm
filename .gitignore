@@ -9,8 +9,8 @@ node_modules/
 typings/
 
 # Wasm binary
-src/lib/*.js
-src/lib/*.wasm
+src/lib/**/*.js
+src/lib/**/*.wasm
 
 # Generated
 dist/

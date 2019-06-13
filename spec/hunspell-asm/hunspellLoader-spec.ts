@@ -1,14 +1,11 @@
-import { ENVIRONMENT } from 'emscripten-wasm-loader';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from '../../src/HunspellAsmModule';
 import { HunspellFactory } from '../../src/HunspellFactory';
 import { hunspellLoader } from '../../src/hunspellLoader';
 import { mountBuffer } from '../../src/mountBuffer';
-import { mountDirectory } from '../../src/mountDirectory';
 import { unmount } from '../../src/unmount';
 import { wrapHunspellInterface } from '../../src/wrapHunspellInterface';
 
-jest.mock('../../src/mountDirectory');
 jest.mock('../../src/mountBuffer');
 jest.mock('../../src/unmount');
 jest.mock('../../src/wrapHunspellInterface');
@@ -26,10 +23,10 @@ describe('hunspellLoader', () => {
     const dummyNanoid = 'meh';
     const asmModule = getAsmModule();
     (nanoid as jest.Mock<any>).mockReturnValueOnce(dummyNanoid);
-    hunspellLoader(asmModule as any, ENVIRONMENT.NODE);
+    hunspellLoader(asmModule as any);
 
     const mkdirMock = asmModule.FS.mkdir.mock;
-    expect(mkdirMock.calls.length).toBeGreaterThan(1);
+    expect(asmModule.FS.mkdir).toHaveBeenCalledTimes(1);
     expect(mkdirMock.calls[0][0]).toEqual(`/${dummyNanoid}`);
   });
 
@@ -37,18 +34,18 @@ describe('hunspellLoader', () => {
     let idCount = 0;
     const asmModule = getAsmModule();
     (nanoid as jest.Mock<any>).mockImplementation(() => `meh${++idCount}`);
-    hunspellLoader(asmModule as any, ENVIRONMENT.NODE);
+    hunspellLoader(asmModule as any);
 
     const mkdirMock = asmModule.FS.mkdir.mock;
-    expect(asmModule.FS.mkdir).toHaveBeenCalledTimes(2);
-    expect(mkdirMock.calls).toEqual([['/meh1'], ['/meh2']]);
+    expect(asmModule.FS.mkdir).toHaveBeenCalledTimes(1);
+    expect(mkdirMock.calls).toEqual([['/meh1']]);
   });
 
   it('should not generate root path for phsyical directory if envoironment is not node', () => {
     let idCount = 0;
     const asmModule = getAsmModule();
     (nanoid as jest.Mock<any>).mockImplementation(() => `meh${++idCount}`);
-    hunspellLoader(asmModule as any, ENVIRONMENT.WEB);
+    hunspellLoader(asmModule as any);
 
     const mkdirMock = asmModule.FS.mkdir.mock;
     expect(asmModule.FS.mkdir).toHaveBeenCalledTimes(1);
@@ -57,17 +54,16 @@ describe('hunspellLoader', () => {
 
   it('should return HunspellFactory instance', () => {
     const asmModule = getAsmModule();
-    const value = hunspellLoader(asmModule as any, ENVIRONMENT.NODE);
+    const value = hunspellLoader(asmModule as any);
 
     expect(value).toBeDefined();
-    expect(Object.keys(value)).toEqual(['mountDirectory', 'mountBuffer', 'unmount', 'create']);
+    expect(Object.keys(value)).toEqual(['mountBuffer', 'unmount', 'create']);
   });
 });
 
 describe('HunspellFactory', () => {
   let hunspellFactory: HunspellFactory;
   let asmModule: HunspellAsmModule;
-  let mountDirMock: jest.Mock;
   let mountBufferMock: jest.Mock;
   let unmountMock: jest.Mock;
   let mockHunspellInterface: {
@@ -85,9 +81,6 @@ describe('HunspellFactory', () => {
   beforeEach(() => {
     let mockIdCount = 0;
     (nanoid as jest.Mock<any>).mockImplementation(() => `${++mockIdCount}`);
-
-    mountDirMock = jest.fn();
-    (mountDirectory as jest.Mock<any>).mockImplementationOnce(() => mountDirMock);
 
     mountBufferMock = jest.fn();
     (mountBuffer as jest.Mock<any>).mockImplementationOnce(() => mountBufferMock);
@@ -111,34 +104,27 @@ describe('HunspellFactory', () => {
 
     asmModule = {
       cwrap: jest.fn(),
-      stackAlloc: jest.fn(() => 1111), //dummy ptr number,
       _malloc: jest.fn(() => 1111), //dummy ptr number,
-      stackSave: jest.fn(),
-      stackRestore: jest.fn(),
       FS: {
         mkdir: jest.fn()
       },
       getValue: jest.fn(),
       _free: jest.fn(),
       allocateUTF8: jest.fn(),
-      Pointer_stringify: jest.fn()
+      UTF8ToString: jest.fn()
     } as any;
 
-    hunspellFactory = hunspellLoader(asmModule, ENVIRONMENT.NODE);
+    hunspellFactory = hunspellLoader(asmModule);
   });
 
   it('should export mount functions', () => {
     expect(mountBuffer as jest.Mock<any>).toHaveBeenCalledTimes(1);
     expect((mountBuffer as jest.Mock<any>).mock.calls[0]).toEqual([asmModule.FS, '/1']);
 
-    expect(mountDirectory as jest.Mock<any>).toHaveBeenCalledTimes(1);
-    expect((mountDirectory as jest.Mock<any>).mock.calls[0]).toEqual([asmModule.FS, '/2', ENVIRONMENT.NODE]);
-
     expect(unmount as jest.Mock<any>).toHaveBeenCalledTimes(1);
     expect((unmount as jest.Mock<any>).mock.calls[0]).toEqual([asmModule.FS, '/1']);
 
     expect(hunspellFactory.mountBuffer).toEqual(mountBufferMock);
-    expect(hunspellFactory.mountDirectory).toEqual(mountDirMock);
     expect(hunspellFactory.unmount).toEqual(unmountMock);
   });
 
@@ -202,7 +188,7 @@ describe('HunspellFactory', () => {
     it('should suggest word for misspelled', () => {
       const suggestion = ['word1', 'word2'];
       let count = 0;
-      (asmModule.Pointer_stringify as jest.Mock<any>).mockImplementation(() => suggestion[count++]);
+      (asmModule.UTF8ToString as jest.Mock<any>).mockImplementation(() => suggestion[count++]);
 
       const hunspell = hunspellFactory.create('aff', 'dic');
       mockHunspellInterface.suggest.mockReturnValueOnce(2);

@@ -7,16 +7,14 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noEmitHelpers": true,
     "noUnusedParameters": true,
-    "importHelpers": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmit": true,
-    "target": "es5",
+    "target": "es2018",
     "outDir": "dist",
     "lib": [
-      "es2016"
+      "es2018"
     ]
   }
 }

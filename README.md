@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/7s0r599r9h6r682g?svg=true)](https://ci.appveyor.com/project/kwonoj/hunspell-asm)
 [![codecov](https://codecov.io/gh/kwonoj/hunspell-asm/branch/master/graph/badge.svg)](https://codecov.io/gh/kwonoj/hunspell-asm)
 [![npm](https://img.shields.io/npm/v/hunspell-asm.svg)](https://www.npmjs.com/package/hunspell-asm)
-[![node](https://img.shields.io/badge/node-=>8.0-blue.svg?style=flat)](https://www.npmjs.com/package/hunspell-asm)
+[![node](https://img.shields.io/badge/node-=>10.0-blue.svg?style=flat)](https://www.npmjs.com/package/hunspell-asm)
 
 # Hunspell-asm
 
@@ -36,9 +36,8 @@ It allows to specify timeout to wait until wasm binary compliation & load. By de
 
 ## Mounting files
 
-Wasm binary uses different memory spaces allocated for its own and cannot access plain javascript object / or files directly. `HunspellFactory` provides few interfaces to interop physical file, or file contents into hunspell.
+Wasm binary uses different memory spaces allocated for its own and cannot access plain javascript object / or files directly. `HunspellFactory` provides few interfaces to interop file contents into hunspell.
 
-- `mountDirectory(dirPath: string): string` : (node.js only) Mount physical path. Once directory is mounted hunspell can read all files under mounted path. Returns `virtual` path to mounted path.
 - `mountBuffer(contents: ArrayBufferView, fileName?: string): string` : Mount contents of file. Environment like browser which doesn't have access to filesystem can use this interface to create each file into memory.
 - `unmount(mountedFilePath: string)` : Unmount path if it's exists in memory. If it's bufferFile created by `mountBuffer`, unmount will remove those file object in wasm memory as well.
 

@@ -1,9 +1,7 @@
-import { ENVIRONMENT } from 'emscripten-wasm-loader';
 import * as nanoid from 'nanoid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { mountBuffer } from './mountBuffer';
-import { mountDirectory } from './mountDirectory';
 import { unmount } from './unmount';
 import { log } from './util/logger';
 import { wrapHunspellInterface } from './wrapHunspellInterface';
@@ -18,20 +16,14 @@ import { wrapHunspellInterface } from './wrapHunspellInterface';
  */
 
 /** @internal */
-export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRONMENT): HunspellFactory => {
-  const { cwrap, FS, _free, allocateUTF8, _malloc, getValue, Pointer_stringify } = asmModule;
+export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory => {
+  const { cwrap, FS, _free, allocateUTF8, _malloc, getValue, UTF8ToString } = asmModule;
   const hunspellInterface = wrapHunspellInterface(cwrap);
 
   //creating top-level path to mount files
   const memPathId = `/${nanoid(45)}`;
   FS.mkdir(memPathId);
   log(`hunspellLoader: mount path for bufferFile created at ${memPathId}`);
-
-  const nodePathId = `/${nanoid(45)}`;
-  if (environment === ENVIRONMENT.NODE) {
-    FS.mkdir(nodePathId);
-    log(`hunspellLoader: mount path for directory created at ${nodePathId}`);
-  }
 
   /**
    * Naive auto-dispose interface to call hunspell interface with string params.
@@ -47,7 +39,6 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
   };
 
   return {
-    mountDirectory: mountDirectory(FS, nodePathId, environment),
     mountBuffer: mountBuffer(FS, memPathId),
     unmount: unmount(FS, memPathId),
     create: (affPath: string, dictPath: string) => {
@@ -72,7 +63,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule, environment: ENVIRO
           const ret =
             suggestionCount > 0
               ? Array.from(Array(suggestionCount).keys()).map(idx =>
-                  Pointer_stringify(getValue(suggestionListValuePtr + idx * 4, '*'))
+                  UTF8ToString(getValue(suggestionListValuePtr + idx * 4, '*'))
                 )
               : [];
 
