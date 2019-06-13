@@ -1,7 +1,8 @@
 import { getModuleLoader as getModuleLoaderMock, isNode } from 'emscripten-wasm-loader';
+import * as hunspellMock from '../../src/lib/node/hunspell';
 import { loadModule } from '../../src/loadModule';
 
-jest.mock('../../src/lib/node/hunspell', () => jest.fn(), { virtual: true });
+jest.mock('../../src/lib/node/hunspell', () => jest.fn());
 jest.mock('emscripten-wasm-loader', () => ({
   isWasmEnabled: jest.fn(),
   isNode: jest.fn(),
@@ -11,8 +12,6 @@ jest.mock('emscripten-wasm-loader', () => ({
     NODE: 'NODE'
   }
 }));
-
-const hunspellMock = require('../../src/lib/node/hunspell'); //tslint:disable-line:no-require-imports no-var-requires
 
 const getModuleMock = () => ({
   cwrap: jest.fn(),
