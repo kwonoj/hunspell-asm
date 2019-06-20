@@ -1,3 +1,13 @@
+<a name="3.0.2"></a>
+## [3.0.2](https://github.com/kwonoj/hunspell-asm/compare/v3.0.1...v3.0.2) (2019-06-20)
+
+
+### Bug Fixes
+
+* **hunspell:** bump to non-optimized hunspell ([97df1f6](https://github.com/kwonoj/hunspell-asm/commit/97df1f6)), closes [#187](https://github.com/kwonoj/hunspell-asm/issues/187)
+
+
+
 <a name="3.0.1"></a>
 ## [3.0.1](https://github.com/kwonoj/hunspell-asm/compare/v3.0.0...v3.0.1) (2019-06-13)
 
