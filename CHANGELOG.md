@@ -1,3 +1,9 @@
+<a name="3.0.3"></a>
+## [3.0.3](https://github.com/kwonoj/hunspell-asm/compare/v3.0.2...v3.0.3) (2019-07-19)
+
+* bump up dependencies
+
+
 <a name="3.0.2"></a>
 ## [3.0.2](https://github.com/kwonoj/hunspell-asm/compare/v3.0.1...v3.0.2) (2019-06-20)
 
