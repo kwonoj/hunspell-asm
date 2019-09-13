@@ -1,3 +1,18 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/kwonoj/hunspell-asm/compare/v3.0.3...v4.0.0) (2019-09-13)
+
+
+### Features
+
+* **hunspell:** reenable optimization ([06bdc36](https://github.com/kwonoj/hunspell-asm/commit/06bdc36))
+
+
+### BREAKING CHANGES
+
+* **hunspell:** Unsupport mobile safari version have bugs (#187)
+
+
+
 <a name="3.0.3"></a>
 ## [3.0.3](https://github.com/kwonoj/hunspell-asm/compare/v3.0.2...v3.0.3) (2019-07-19)
 
