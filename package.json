@@ -1,6 +1,6 @@
 {
   "name": "hunspell-asm",
-  "version": "3.0.3",
+  "version": "4.0.0",
   "description": "WebAssembly based Javascript bindings for hunspell spellchecker",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -13,7 +13,7 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     },
-    "hunspell-version": "e13bda0-190620"
+    "hunspell-version": "4870475-190913"
   },
   "lint-staged": {
     "*.ts": [
@@ -54,36 +54,36 @@
   ],
   "homepage": "https://github.com/kwonoj/hunspell-asm#readme",
   "devDependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.6.0",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-angular": "^8.1.0",
-    "@types/chai": "^4.1.7",
-    "@types/jest": "^24.0.15",
-    "@types/lodash": "^4.14.136",
-    "@types/node": "^12.6.8",
+    "@types/chai": "^4.2.2",
+    "@types/jest": "^24.0.18",
+    "@types/lodash": "^4.14.138",
+    "@types/node": "^12.7.5",
     "@types/shelljs": "^0.8.5",
     "chai": "^4.2.0",
-    "commitizen": "^4.0.2",
-    "conventional-changelog-cli": "^2.0.21",
-    "husky": "^3.0.1",
-    "jest": "^24.8.0",
-    "jest-spin-reporter": "^1.0.2",
-    "lint-staged": "^9.2.0",
+    "commitizen": "^4.0.3",
+    "conventional-changelog-cli": "^2.0.23",
+    "husky": "^3.0.5",
+    "jest": "^24.9.0",
+    "jest-spin-reporter": "^2.0.0",
+    "lint-staged": "^9.2.5",
     "lodash": "^4.17.15",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2",
-    "rxjs": "^6.5.2",
+    "rxjs": "^6.5.3",
     "shelljs": "^0.8.3",
     "shx": "^0.3.2",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^24.1.0",
     "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
+    "tslint": "^5.20.0",
     "tslint-no-unused-expression-chai": "0.1.4",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "emscripten-wasm-loader": "^3.0.3",
-    "nanoid": "^2.0.3"
+    "nanoid": "^2.1.1"
   },
   "engines": {
     "node": ">=4"
