@@ -31,7 +31,8 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
   const usingParamPtr = <T = void>(...args: Array<string | ((...args: Array<number>) => T)>): T => {
     const params = [...args];
     const fn = params.pop()!;
-    const paramsPtr = params.map((param: string) => allocateUTF8(param));
+    //https://mathiasbynens.be/notes/javascript-unicode
+    const paramsPtr = params.map((param: string) => allocateUTF8(param.normalize()));
     const ret = (fn as Function)(...paramsPtr);
     paramsPtr.forEach(paramPtr => _free(paramPtr));
     return ret;
