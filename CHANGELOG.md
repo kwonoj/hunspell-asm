@@ -1,3 +1,13 @@
+<a name="4.0.1"></a>
+## [4.0.1](https://github.com/kwonoj/hunspell-asm/compare/v4.0.0...v4.0.1) (2019-10-19)
+
+
+### Bug Fixes
+
+* **hunspell:** normalize unicodei to NFC where possible ([800b79e](https://github.com/kwonoj/hunspell-asm/commit/800b79e))
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/kwonoj/hunspell-asm/compare/v3.0.3...v4.0.0) (2019-09-13)
 
