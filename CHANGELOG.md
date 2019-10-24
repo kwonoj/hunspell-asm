@@ -1,3 +1,10 @@
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/kwonoj/hunspell-asm/compare/v4.0.1...v4.0.2) (2019-10-24)
+
+### Features
+
+* **hunspell:** bump up binary to reduce size using llvm backend
+
 <a name="4.0.1"></a>
 ## [4.0.1](https://github.com/kwonoj/hunspell-asm/compare/v4.0.0...v4.0.1) (2019-10-19)
 
