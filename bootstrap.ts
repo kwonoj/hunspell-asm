@@ -84,7 +84,7 @@ const downloadSingleBinary = async (
       const fileName = `hunspell_${binaryType}.js`;
 
       return {
-        url: `https://github.com/kwonoj/docker-hunspell-wasm/releases/download/${version}/${fileName}`,
+        url: `https://github.com/kebal2/docker-hunspell-wasm/releases/download/${version}/${fileName}`,
         localBinaryPath: path.join(libPath, binaryType, 'hunspell.js'),
         binaryType,
         type: path.extname(fileName) === '.js' ? 'hex' : ('binary' as crypto.HexBase64Latin1Encoding)
