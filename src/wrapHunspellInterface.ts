@@ -13,6 +13,11 @@ export const wrapHunspellInterface = (cwrap: cwrapSignature) => ({
   //int Hunspell_spell(Hunhandle* pHunspell, const char*)
   spell: cwrap<(hunspellPtr: number, value: number) => number>('Hunspell_spell', 'number', ['number', 'number']),
   //int Hunspell_suggest(Hunhandle* pHunspell, char*** slst, const char* word);
+  stem: cwrap<(hunspellPtr: number, outSuggestionListPtr: number, value: number) => number>('Hunspell_stem', 'number', [
+    'number',
+    'number',
+    'number'
+  ]),
   suggest: cwrap<(hunspellPtr: number, outSuggestionListPtr: number, value: number) => number>(
     'Hunspell_suggest',
     'number',

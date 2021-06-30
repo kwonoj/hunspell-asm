@@ -72,6 +72,25 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
           _free(suggestionListPtr);
           return ret;
         },
+        stem: (word: string) => {
+          const suggestionListPtr = _malloc(4);
+          const suggestionCount = usingParamPtr(word, wordPtr =>
+            hunspellInterface.stem(hunspellPtr, suggestionListPtr, wordPtr)
+          );
+          const suggestionListValuePtr = getValue(suggestionListPtr, '*');
+
+          const ret =
+            suggestionCount > 0
+              ? Array.from(Array(suggestionCount).keys()).map(idx =>
+                  UTF8ToString(getValue(suggestionListValuePtr + idx * 4, '*'))
+                )
+              : [];
+
+          hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
+
+          _free(suggestionListPtr);
+          return ret;
+        },
         addDictionary: (dictPath: string) =>
           usingParamPtr(dictPath, dictPathPtr => hunspellInterface.add_dic(hunspellPtr, dictPathPtr)) === 1
             ? false
