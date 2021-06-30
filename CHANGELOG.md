@@ -1,3 +1,10 @@
+<a name="4.1.0"></a>
+## [4.1.0](https://github.com/kwonoj/hunspell-asm/compare/v4.1.0...v4.0.2) (2021-06-30)
+
+### Features
+
+* **stemming:** adding interface for hunspell stemming function
+
 <a name="4.0.2"></a>
 ## [4.0.2](https://github.com/kwonoj/hunspell-asm/compare/v4.0.1...v4.0.2) (2019-10-24)
 
