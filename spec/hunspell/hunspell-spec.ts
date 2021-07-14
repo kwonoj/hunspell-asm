@@ -12,7 +12,7 @@ const readFile = bindNodeCallback(fs.readFile);
 const mountBufferHunspell = async (factory: HunspellFactory, dirPath: string, fixture: string) => {
   const buffers: Array<string> = [];
   const read = async (filePath: string) => {
-    const mountedPath = factory.mountBuffer(await readFile(filePath).toPromise());
+    const mountedPath = factory.mountBuffer((await readFile(filePath).toPromise())!);
     buffers.push(mountedPath);
     return mountedPath;
   };
@@ -26,8 +26,8 @@ const mountBufferHunspell = async (factory: HunspellFactory, dirPath: string, fi
     hunspell,
     dispose: () => {
       hunspell.dispose();
-      buffers.forEach(x => factory.unmount(x));
-    }
+      buffers.forEach((x) => factory.unmount(x));
+    },
   };
 };
 
@@ -39,11 +39,11 @@ const baseFixturePath = path.join(__dirname, '../__fixtures__');
 enum TestType {
   MatchSpell = '.good',
   MismatchSpell = '.wrong',
-  Suggestion = '.sug'
+  Suggestion = '.sug',
 }
 
 enum MountType {
-  Buffer = 'buffer'
+  Buffer = 'buffer',
 }
 
 /**
@@ -55,25 +55,25 @@ const getFixtureList = (fixturePath: string, testType: TestType, skipList: Array
   flatten(
     fs
       .readdirSync(fixturePath)
-      .filter(file => path.extname(file) === testType)
-      .map(file => path.basename(file, testType))
-      .filter(x => {
+      .filter((file) => path.extname(file) === testType)
+      .map((file) => path.basename(file, testType))
+      .filter((x) => {
         if (includes(skipList, x)) {
           console.log(`Skipping test fixture '${x}'`); //tslint:disable-line:no-console
           return false;
         }
         return true;
       })
-      .map<Array<[string, MountType, ((factory: HunspellFactory) => ReturnType<typeof mountBufferHunspell>)]>>(
-        fixture => [
-          [fixture, MountType.Buffer, async factory => await mountBufferHunspell(factory, baseFixturePath, fixture)]
+      .map<Array<[string, MountType, (factory: HunspellFactory) => ReturnType<typeof mountBufferHunspell>]>>(
+        (fixture) => [
+          [fixture, MountType.Buffer, async (factory) => await mountBufferHunspell(factory, baseFixturePath, fixture)],
         ]
       )
   );
 
 const readWords = async (fixture: string, testType: TestType): Promise<Array<string>> =>
   await (readFile as any)(`${path.join(baseFixturePath, fixture)}${testType}`, 'utf-8')
-    .pipe(map((value: string) => value.split('\n').filter(x => !!x)))
+    .pipe(map((value: string) => value.split('\n').filter((x) => !!x)))
     .toPromise();
 
 /**
@@ -84,9 +84,8 @@ describe('hunspell', () => {
   let hunspellFactory: HunspellFactory;
 
   //load module one time before test begins
-  beforeAll(async done => {
+  beforeAll(async () => {
     hunspellFactory = await loadModule();
-    done();
   });
 
   /**
@@ -105,8 +104,8 @@ describe('hunspell', () => {
       const words = await readWords(fixture, testType);
 
       words
-        .filter(word => !includes(excludedWords, word))
-        .forEach(word => {
+        .filter((word) => !includes(excludedWords, word))
+        .forEach((word) => {
           const value = hunspell.spell(word);
           expect({ word, value }).toEqual({ word, value: expectedValue });
         });
@@ -137,28 +136,28 @@ describe('hunspell', () => {
           ...fs
             .readFileSync(`${base}.sug`, 'utf-8')
             .split('\n')
-            .filter(x => !!x)
-            .map(x => {
+            .filter((x) => !!x)
+            .map((x) => {
               const splitted = x.split(', ');
               if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
                 return splitted[0];
               }
-              const filtered = splitted.filter(word => !includes(excludedWords, word));
+              const filtered = splitted.filter((word) => !includes(excludedWords, word));
               if (filtered.length > 0) {
                 return filtered;
               }
               return null;
-            })
+            }),
         ] || []
-      ).filter(x => !!x);
+      ).filter((x) => !!x);
 
       const words = await readWords(fixture, TestType.MismatchSpell);
 
       //run suggestion, construct results into Array<string|Array<string>>
       const suggested: Array<string | Array<string>> = [];
       words
-        .filter(word => !includes(excludedWords, word))
-        .forEach(word => {
+        .filter((word) => !includes(excludedWords, word))
+        .forEach((word) => {
           const ret = hunspell.suggest(word);
           if (ret.length > 0) {
             suggested.push(ret.length > 1 ? ret : ret[0]);
