@@ -1,5 +1,5 @@
 import { mountBuffer, unmount } from 'emscripten-wasm-loader';
-import * as nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import { HunspellAsmModule } from './HunspellAsmModule';
 import { HunspellFactory } from './HunspellFactory';
 import { log } from './util/logger';

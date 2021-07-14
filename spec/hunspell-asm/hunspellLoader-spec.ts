@@ -1,5 +1,5 @@
 import { mountBuffer, unmount } from 'emscripten-wasm-loader';
-import * as nanoid from 'nanoid';
+import { nanoid } from 'nanoid';
 import { HunspellAsmModule } from '../../src/HunspellAsmModule';
 import { HunspellFactory } from '../../src/HunspellFactory';
 import { hunspellLoader } from '../../src/hunspellLoader';
@@ -10,7 +10,7 @@ jest.mock('emscripten-wasm-loader', () => ({
   unmount: jest.fn()
 }));
 jest.mock('../../src/wrapHunspellInterface');
-jest.mock('nanoid');
+jest.mock('nanoid', () => ({ nanoid: jest.fn() }));
 
 const getAsmModule = () => ({
   cwrap: jest.fn(),
