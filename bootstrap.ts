@@ -80,14 +80,14 @@ const downloadSingleBinary = async (
 (async () => {
   try {
     const libPath = path.resolve('./src/lib');
-    const binaryFiles = ['node', 'browser'].map(binaryType => {
+    const binaryFiles = ['node', 'browser'].map((binaryType) => {
       const fileName = `hunspell_${binaryType}.js`;
 
       return {
         url: `https://github.com/kwonoj/docker-hunspell-wasm/releases/download/${version}/${fileName}`,
         localBinaryPath: path.join(libPath, binaryType, 'hunspell.js'),
         binaryType,
-        type: path.extname(fileName) === '.js' ? 'hex' : ('binary' as crypto.HexBase64Latin1Encoding)
+        type: path.extname(fileName) === '.js' ? 'hex' : 'binary',
       };
     });
 
