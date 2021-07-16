@@ -7,7 +7,7 @@ import { wrapHunspellInterface } from '../../src/wrapHunspellInterface';
 
 jest.mock('emscripten-wasm-loader', () => ({
   mountBuffer: jest.fn(),
-  unmount: jest.fn()
+  unmount: jest.fn(),
 }));
 jest.mock('../../src/wrapHunspellInterface');
 jest.mock('nanoid', () => ({ nanoid: jest.fn() }));
@@ -15,8 +15,8 @@ jest.mock('nanoid', () => ({ nanoid: jest.fn() }));
 const getAsmModule = () => ({
   cwrap: jest.fn(),
   FS: {
-    mkdir: jest.fn()
-  }
+    mkdir: jest.fn(),
+  },
 });
 
 describe('hunspellLoader', () => {
@@ -71,6 +71,7 @@ describe('HunspellFactory', () => {
     create: jest.Mock;
     spell: jest.Mock;
     suggest: jest.Mock;
+    stem: jest.Mock;
     free_list: jest.Mock;
     destroy: jest.Mock;
     add_dic: jest.Mock;
@@ -93,12 +94,13 @@ describe('HunspellFactory', () => {
       create: jest.fn(),
       spell: jest.fn(),
       suggest: jest.fn(),
+      stem: jest.fn(),
       free_list: jest.fn(),
       destroy: jest.fn(),
       add_dic: jest.fn(),
       add: jest.fn(),
       add_with_affix: jest.fn(),
-      remove: jest.fn()
+      remove: jest.fn(),
     };
 
     (wrapHunspellInterface as jest.Mock<any>).mockImplementationOnce(() => mockHunspellInterface);
@@ -107,12 +109,12 @@ describe('HunspellFactory', () => {
       cwrap: jest.fn(),
       _malloc: jest.fn(() => 1111), //dummy ptr number,
       FS: {
-        mkdir: jest.fn()
+        mkdir: jest.fn(),
       },
       getValue: jest.fn(),
       _free: jest.fn(),
       allocateUTF8: jest.fn(),
-      UTF8ToString: jest.fn()
+      UTF8ToString: jest.fn(),
     } as any;
 
     hunspellFactory = hunspellLoader(asmModule);
@@ -149,7 +151,7 @@ describe('HunspellFactory', () => {
       mockHunspellInterface.spell.mockReturnValueOnce(1);
 
       //each time param's passed, expect to call _free
-      [1, 2, 3].forEach(x => {
+      [1, 2, 3].forEach((x) => {
         hunspell.spell(x.toString());
         expect(asmModule._free).toHaveBeenCalledTimes(x);
       });
@@ -160,7 +162,7 @@ describe('HunspellFactory', () => {
       mockHunspellInterface.spell.mockReturnValueOnce(1);
 
       //each time param's passed, expect to call _free
-      [1, 2, 3].forEach(x => {
+      [1, 2, 3].forEach((x) => {
         hunspell.addWordWithAffix(x.toString(), x.toString());
         expect(asmModule._free).toHaveBeenCalledTimes(x * 2);
       });
@@ -195,6 +197,21 @@ describe('HunspellFactory', () => {
       mockHunspellInterface.suggest.mockReturnValueOnce(2);
 
       const suggested = hunspell.suggest('word');
+      expect(suggested).toHaveLength(2);
+      expect(suggested).toEqual(suggestion);
+
+      expect(mockHunspellInterface.free_list).toHaveBeenCalledTimes(1);
+    });
+
+    it('should suggest stememd version of the word', () => {
+      const suggestion = ['stemmed', 'words'];
+      let count = 0;
+      (asmModule.UTF8ToString as jest.Mock<any>).mockImplementation(() => suggestion[count++]);
+
+      const hunspell = hunspellFactory.create('aff', 'dic');
+      mockHunspellInterface.stem.mockReturnValueOnce(2);
+
+      const suggested = hunspell.stem('word');
       expect(suggested).toHaveLength(2);
       expect(suggested).toEqual(suggestion);
 

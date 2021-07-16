@@ -34,7 +34,7 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
     //https://mathiasbynens.be/notes/javascript-unicode
     const paramsPtr = params.map((param: string) => allocateUTF8(param.normalize()));
     const ret = (fn as Function)(...paramsPtr);
-    paramsPtr.forEach(paramPtr => _free(paramPtr));
+    paramsPtr.forEach((paramPtr) => _free(paramPtr));
     return ret;
   };
 
@@ -46,43 +46,53 @@ export const hunspellLoader = (asmModule: HunspellAsmModule): HunspellFactory =>
       const dictPathPtr = allocateUTF8(dictPath);
       const hunspellPtr = hunspellInterface.create(affPathPtr, dictPathPtr);
 
+      const suggestionsFor = (
+        word: string,
+        suggestFunction: (hunspellPtr: number, outSuggestionListPtr: number, value: number) => number
+      ): string[] => {
+        const suggestionListPtr = _malloc(4);
+        const suggestionCount = usingParamPtr(word, (wordPtr) =>
+          suggestFunction(hunspellPtr, suggestionListPtr, wordPtr)
+        );
+        const suggestionListValuePtr = getValue(suggestionListPtr, '*');
+
+        const ret =
+          suggestionCount > 0
+            ? Array.from(Array(suggestionCount).keys()).map((idx) =>
+                UTF8ToString(getValue(suggestionListValuePtr + idx * 4, '*'))
+              )
+            : [];
+
+        hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
+
+        _free(suggestionListPtr);
+        return ret;
+      };
+
       return {
         dispose: () => {
           hunspellInterface.destroy(hunspellPtr);
           _free(affPathPtr);
           _free(dictPathPtr);
         },
-        spell: (word: string) => !!usingParamPtr(word, wordPtr => hunspellInterface.spell(hunspellPtr, wordPtr)),
+        spell: (word: string) => !!usingParamPtr(word, (wordPtr) => hunspellInterface.spell(hunspellPtr, wordPtr)),
         suggest: (word: string) => {
-          const suggestionListPtr = _malloc(4);
-          const suggestionCount = usingParamPtr(word, wordPtr =>
-            hunspellInterface.suggest(hunspellPtr, suggestionListPtr, wordPtr)
-          );
-          const suggestionListValuePtr = getValue(suggestionListPtr, '*');
-
-          const ret =
-            suggestionCount > 0
-              ? Array.from(Array(suggestionCount).keys()).map(idx =>
-                  UTF8ToString(getValue(suggestionListValuePtr + idx * 4, '*'))
-                )
-              : [];
-
-          hunspellInterface.free_list(hunspellPtr, suggestionListPtr, suggestionCount);
-
-          _free(suggestionListPtr);
-          return ret;
+          return suggestionsFor(word, hunspellInterface.suggest);
+        },
+        stem: (word: string) => {
+          return suggestionsFor(word, hunspellInterface.stem);
         },
         addDictionary: (dictPath: string) =>
-          usingParamPtr(dictPath, dictPathPtr => hunspellInterface.add_dic(hunspellPtr, dictPathPtr)) === 1
+          usingParamPtr(dictPath, (dictPathPtr) => hunspellInterface.add_dic(hunspellPtr, dictPathPtr)) === 1
             ? false
             : true,
-        addWord: (word: string) => usingParamPtr(word, wordPtr => hunspellInterface.add(hunspellPtr, wordPtr)),
+        addWord: (word: string) => usingParamPtr(word, (wordPtr) => hunspellInterface.add(hunspellPtr, wordPtr)),
         addWordWithAffix: (word: string, affix: string) =>
           usingParamPtr(word, affix, (wordPtr, affixPtr) =>
             hunspellInterface.add_with_affix(hunspellPtr, wordPtr, affixPtr)
           ),
-        removeWord: (word: string) => usingParamPtr(word, wordPtr => hunspellInterface.remove(hunspellPtr, wordPtr))
+        removeWord: (word: string) => usingParamPtr(word, (wordPtr) => hunspellInterface.remove(hunspellPtr, wordPtr)),
       };
-    }
+    },
   };
 };
