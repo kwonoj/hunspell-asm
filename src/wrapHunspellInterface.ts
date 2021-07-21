@@ -18,6 +18,12 @@ export const wrapHunspellInterface = (cwrap: cwrapSignature) => ({
     'number',
     ['number', 'number', 'number']
   ),
+  //int Hunspell_stem(Hunhandle* pHunspell, char*** slst, const char* word);
+  stem: cwrap<(hunspellPtr: number, outSuggestionListPtr: number, value: number) => number>('Hunspell_stem', 'number', [
+    'number',
+    'number',
+    'number',
+  ]),
   //void Hunspell_free_list(Hunhandle* pHunspell, char*** slst, int n);
   free_list: cwrap<(hunspellPtr: number, suggestionListPtr: number, count: number) => void>(
     'Hunspell_free_list',
@@ -36,5 +42,5 @@ export const wrapHunspellInterface = (cwrap: cwrapSignature) => ({
     ['number', 'number', 'number']
   ),
   //int Hunspell_remove(Hunhandle* pHunspell, const char* word);
-  remove: cwrap<(hunspellPtr: number, value: number) => number>('Hunspell_remove', 'number', ['number', 'number'])
+  remove: cwrap<(hunspellPtr: number, value: number) => number>('Hunspell_remove', 'number', ['number', 'number']),
 });

@@ -26,6 +26,13 @@ export interface Hunspell {
   suggest: (word: string) => Array<string>;
 
   /**
+   * Gets the given word stemmed versions using current hunspell instance.
+   * This'll return stemmed versions of the given word.
+   */
+
+  stem: (word: string) => Array<string>;
+
+  /**
    * Load additional dictionaries into existing hunspell instance.
    * This only loads dictionaries, cannot load affix.
    *

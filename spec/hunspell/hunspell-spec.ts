@@ -40,6 +40,7 @@ enum TestType {
   MatchSpell = '.good',
   MismatchSpell = '.wrong',
   Suggestion = '.sug',
+  Stem = '.stem',
 }
 
 enum MountType {
@@ -75,6 +76,28 @@ const readWords = async (fixture: string, testType: TestType): Promise<Array<str
   await (readFile as any)(`${path.join(baseFixturePath, fixture)}${testType}`, 'utf-8')
     .pipe(map((value: string) => value.split('\n').filter((x) => !!x)))
     .toPromise();
+
+const getExpectedWords = (expectedWordsFileName: string): Array<string | string[] | null> => {
+  return (
+    [
+      ...fs
+        .readFileSync(expectedWordsFileName, 'utf-8')
+        .split('\n')
+        .filter((x) => !!x)
+        .map((x) => {
+          const splitted = x.split(', ');
+          if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
+            return splitted[0];
+          }
+          const filtered = splitted.filter((word) => !includes(excludedWords, word));
+          if (filtered.length > 0) {
+            return filtered;
+          }
+          return null;
+        }),
+    ] || []
+  ).filter((x) => !!x);
+};
 
 /**
  * running original hunspell's spec.
@@ -124,6 +147,8 @@ describe('hunspell', () => {
   });
 
   describe('should suggest misspelled word-refactor', () => {
+    const testType = TestType.Suggestion;
+
     const suggestionFixtureSkipList = ['1463589', 'i54633', 'map'];
     const fixtureList = getFixtureList(baseFixturePath, TestType.Suggestion, suggestionFixtureSkipList);
 
@@ -131,25 +156,7 @@ describe('hunspell', () => {
       const { hunspell, dispose } = await factory(hunspellFactory);
 
       const base = path.join(baseFixturePath, `${fixture}`);
-      const expectedSuggestions = (
-        [
-          ...fs
-            .readFileSync(`${base}.sug`, 'utf-8')
-            .split('\n')
-            .filter((x) => !!x)
-            .map((x) => {
-              const splitted = x.split(', ');
-              if (splitted.length === 1 && !includes(excludedWords, splitted[0])) {
-                return splitted[0];
-              }
-              const filtered = splitted.filter((word) => !includes(excludedWords, word));
-              if (filtered.length > 0) {
-                return filtered;
-              }
-              return null;
-            }),
-        ] || []
-      ).filter((x) => !!x);
+      const expectedSuggestions = getExpectedWords(`${base}${testType}`);
 
       const words = await readWords(fixture, TestType.MismatchSpell);
 
@@ -166,6 +173,36 @@ describe('hunspell', () => {
 
       //fixture should equal to actual suggestion
       expect(suggested).toEqual(expectedSuggestions);
+      dispose();
+    });
+  });
+
+  describe('should suggest stems', () => {
+    const testType = TestType.Stem;
+
+    const fixtureList = getFixtureList(baseFixturePath, testType, []);
+
+    it.each(fixtureList)(`fixture '%s' for %s`, async (fixture, _mountType, factory) => {
+      const { hunspell, dispose } = await factory(hunspellFactory);
+
+      const base = path.join(baseFixturePath, `${fixture}`);
+      const expectedStems = getExpectedWords(`${base}${testType}`);
+
+      const words = await readWords(fixture, TestType.MatchSpell);
+
+      //run stem, construct results into Array<string|Array<string>>
+      const stemmed: Array<string | Array<string>> = [];
+      words
+        .filter((word) => !includes(excludedWords, word))
+        .forEach((word) => {
+          const ret = hunspell.stem(word);
+          if (ret.length > 0) {
+            stemmed.push(ret.length > 1 ? ret : ret[0]);
+          }
+        });
+
+      //fixture should equal to actual suggestion
+      expect(stemmed).toEqual(expectedStems);
       dispose();
     });
   });
